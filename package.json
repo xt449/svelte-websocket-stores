@@ -1,13 +1,14 @@
 {
-  "name": "svelte-demo-2",
+  "name": "crestron-svelte",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+	  "predev": "npm run build",
+    "dev": "start ./dist/index.html",
     "build": "vite build",
-    "archive": "ch5-cli archive -p svelte-demo-2 -d dist -o archive",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "archive": "ch5-cli archive -p svelte-demo-2 -d dist -o archive"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.2",
