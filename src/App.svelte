@@ -9,7 +9,7 @@
 </script>
 
 <main>
-	<h1>Svelte Demo</h1>
+	<h1>Crestron-Svelte Demo</h1>
 
 	<div>
 		<MySpan id="ab" />

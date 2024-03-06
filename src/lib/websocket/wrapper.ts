@@ -1,4 +1,4 @@
-import { booleans, numbers, strings} from './store'
+import { booleans, numbers, strings } from './store'
 
 const SERVER_IP = "192.168.1.2";
 
@@ -30,7 +30,7 @@ class WebSocketWrapper {
         };
         this.ws.onmessage = event => {
             var payload = JSON.parse(event.data);
-            switch(payload.type) {
+            switch (payload.type) {
                 case "boolean": {
                     console.log(`remote boolean update ${payload.id} = ${payload.value}`);
                     booleans.get(payload.id).setLocally(Boolean(payload.value));
@@ -84,7 +84,7 @@ class WebSocketWrapper {
 }
 
 export const webSocketWrapper = new WebSocketWrapper();
-(async function() {
+(async () => {
     await webSocketWrapper.waitForConnectionAsync();
     console.log("Connected");
 })();

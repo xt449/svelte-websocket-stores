@@ -8,7 +8,7 @@
 	  "predev": "npm run build",
     "dev": "start ./dist/index.html",
     "build": "vite build",
-    "archive": "ch5-cli archive -p svelte-demo-2 -d dist -o archive"
+    "archive": "ch5-cli archive -p crestron-svelte -d dist -o archive"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.2",

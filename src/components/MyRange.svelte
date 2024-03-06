@@ -1,6 +1,6 @@
 <script lang="ts">
     import { ANALOG_MAX } from "../lib/crestron";
-    import { numbers } from "../lib/websocket/store"
+    import { numbers } from "../lib/websocket/store";
 
     export let id: string;
     export let label: string;
