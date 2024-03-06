@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { integers } from '../stores';
+	import { numbers } from '../lib/websocket/store';
 	
 	export let id: string;
 
-	$: value = $integers[id];
+	let value = numbers.get(`${id}.value`);
 </script>
 
-<span>{value}</span>
+<span>{$value}</span>

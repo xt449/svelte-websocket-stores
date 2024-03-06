@@ -1,6 +1,7 @@
 <script lang="ts">
-	import './WebSocketWrapper'
-	// import svelteLogo from './assets/svelte.svg'
+	// Import to start WebSocket ASAP
+	import './lib/websocket/wrapper';
+
 	import Counter from './components/Counter.svelte'
     // import SvelteSpan from './components/SvelteSpan.svelte';
     // import SvelteButton from './components/SvelteButton.svelte';
@@ -26,11 +27,11 @@
 	</div>
 
 	<div>
-		<MySpan id="" />
+		<MySpan id="ab" />
 	</div>
 
 	<div>
-		<MyButton id="" />
+		<MyButton id="ab" />
 	</div>
 
 	<div>

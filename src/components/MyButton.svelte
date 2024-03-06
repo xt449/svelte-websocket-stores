@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { webSocketWrapper } from '../WebSocketWrapper';
+	import { numbers } from '../lib/websocket/store';
 
 	export let id: string;
 
+    let value = numbers.get(`${id}.value`);
+
     function randomize() {
-        webSocketWrapper.setInteger(id, Math.floor(Math.random() * 999));
+        $value = Math.floor(Math.random() * 999);
     }
 </script>
 
