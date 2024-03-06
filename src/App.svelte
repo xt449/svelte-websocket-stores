@@ -2,9 +2,6 @@
 	// Import to start WebSocket ASAP
 	import './lib/websocket/wrapper';
 
-	import Counter from './components/Counter.svelte'
-    // import SvelteSpan from './components/SvelteSpan.svelte';
-    // import SvelteButton from './components/SvelteButton.svelte';
 	import MySpan from './components/MySpan.svelte';
 	import MyButton from './components/MyButton.svelte';
     import MyToggle from './components/MyToggle.svelte';
@@ -13,18 +10,6 @@
 
 <main>
 	<h1>Svelte Demo</h1>
-
-	<div>
-		<Counter />
-	</div>
-
-	<div>
-		<!-- <SvelteSpan id="abc" /> -->
-	</div>
-
-	<div>
-		<!-- <SvelteButton id="abc" /> -->
-	</div>
 
 	<div>
 		<MySpan id="ab" />
