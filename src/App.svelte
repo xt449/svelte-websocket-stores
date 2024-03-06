@@ -2,29 +2,33 @@
 	// Import to start WebSocket ASAP
 	import './lib/websocket/wrapper';
 
-	import MySpan from './components/MySpan.svelte';
-	import MyButton from './components/MyButton.svelte';
-    import MyToggle from './components/MyToggle.svelte';
-    import MyRange from './components/MyRange.svelte';
+    import MyCheckbox from './components/MyCheckboxInput.svelte';
+    import MyNumber from './components/MyNumberSpan.svelte';
+    import MyPercent from './components/MyPercentSpan.svelte';
+    import MyRange from './components/MyRangeInput.svelte';
+	import TestButton from './components/TestButton.svelte';
 </script>
 
 <main>
 	<h1>Crestron-Svelte Demo</h1>
 
 	<div>
-		<MySpan id="ab" />
+		<MyNumber id="ab" />
 	</div>
 
 	<div>
-		<MyButton id="ab" />
+		<TestButton id="ab" />
 	</div>
 
 	<div>
-		<MyToggle id="mics.mute" label="Mics Mute" />
+		<label for="mics.mute">Mics Mute</label>
+		<MyCheckbox id="mics.mute" />
 	</div>
 
 	<div>
-		<MyRange id="speaker.level.percent" label="Speaker Level" />
+		<label for="speaker.level.percent">Speaker Level</label>
+		<MyRange id="speaker.level.percent" />
+		<MyPercent id="speaker.level.percent" />
 	</div>
 </main>
 
