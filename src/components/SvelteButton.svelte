@@ -1,5 +1,5 @@
 <!-- <script lang="ts">
-	import { integers } from '../stores.ts';
+	import { integers } from '../stores';
 
 	export let id: string;
 

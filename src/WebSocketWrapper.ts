@@ -1,4 +1,4 @@
-import {setStoreBoolean, setStoreInteger, setStoreString} from './stores.ts'
+import {setStoreBoolean, setStoreInteger, setStoreString} from './stores'
 
 const SERVER_IP = "192.168.1.2";
 
@@ -11,10 +11,12 @@ class WebSocketWrapper {
         this.initWebSocketListeners();
     }
 
-    private restart() {
+    private async restart() {
         console.log("Restarting WebSocket...");
         this.ws = new WebSocket(`ws://${SERVER_IP}:50080`);
         this.initWebSocketListeners();
+        await this.waitForConnectionAsync();
+        console.log("Connected");
     }
 
     private initWebSocketListeners() {
@@ -87,6 +89,7 @@ class WebSocketWrapper {
 export const webSocketWrapper = new WebSocketWrapper();
 (async function() {
     await webSocketWrapper.waitForConnectionAsync();
+    console.log("Connected");
     
     // Add listeners
     document.addEventListener("pointerdown", localPointerStart);
@@ -97,10 +100,6 @@ export const webSocketWrapper = new WebSocketWrapper();
     document.addEventListener("click", localClick);
     document.addEventListener("change", localChange);
     document.addEventListener("input", localInput);
-
-    // Debug
-    console.log("WbSocket: Connected");
-    webSocketWrapper.setBoolean("hello_world", true);
 })()
 
 // Local Listeners
@@ -115,7 +114,10 @@ function localPointerStart(event: any) {
         return;
     }
 
-    webSocketWrapper.setBoolean(`${event.target.id}.press`, true);
+    if(event.target instanceof Element && event.target.matches("button, input[type=\"button\"]")) {
+        webSocketWrapper.setBoolean(`${event.target.id}.press`, true);
+    }
+    // webSocketWrapper.setBoolean(`${event.target.id}.press`, true);
 }
 
 /**
@@ -128,17 +130,20 @@ function localPointerStop(event: any) {
         return;
     }
 
-    webSocketWrapper.setBoolean(`${event.target.id}.press`, false);
+    if(event.target instanceof Element && event.target.matches("button, input[type=\"button\"]")) {
+        webSocketWrapper.setBoolean(`${event.target.id}.press`, false);
+    }
+    // webSocketWrapper.setBoolean(`${event.target.id}.press`, false);
 }
 
 /**
  * @param {PointerEvent} event 
  */
 function localClick(event: any) {
+    console.log(`click on ${event.target.tagName} #${event.target.id}`);
+
     // Debug - Click is always duplicated by PointerStart and PointerStop unless the element is clicked without a pointer (ie: pressing Space while slected)
     return;
-
-    console.log(`click on ${event.target.tagName} #${event.target.id}`);
     
     if(event.target.id === "") {
         return;
@@ -221,6 +226,9 @@ function localInput(event: any) {
         return;
     }
 
+    // Debug - dont do this for things like checkboxes. keep this disabled for now
+    return;
+    
     webSocketWrapper.setBoolean(`${event.target.id}.value`, event.target.value);
 }
 
@@ -232,6 +240,13 @@ function remoteBooleanHandler(id: string, value: boolean) {
 
 function remoteIntegerHandler(id: string, value: number) {
     console.log(`remote integer update ${id} = ${value}`);
+
+    if(id.endsWith(".value")) {
+        id = id.substring(0, id.length - 6);
+    }
+    id = id.replaceAll(".", "\\.");
+
+    (document.querySelector(`#${id}`) as HTMLInputElement).value = String(value);
 }
 
 function remoteStringHandler(id: string, value: string) {

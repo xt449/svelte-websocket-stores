@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { webSocketWrapper } from '../WebSocketWrapper.ts';
+	import { webSocketWrapper } from '../WebSocketWrapper';
 
 	export let id: string;
 
