@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { booleans } from "../lib/websocket/store";
+    import { booleans } from "$lib/websocket/store";
 
     export let id: string;
 

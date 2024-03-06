@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { numbers } from "../lib/websocket/store";
+	import { numbers } from "$lib/websocket/store";
 
 	export let id: string;
 

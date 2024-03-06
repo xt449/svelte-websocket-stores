@@ -1,16 +1,22 @@
 <script lang="ts">
-	// Import to start WebSocket ASAP
-	import './lib/websocket/wrapper';
-
-    import MyCheckbox from './components/MyCheckboxInput.svelte';
-    import MyNumber from './components/MyNumberSpan.svelte';
-    import MyPercent from './components/MyPercentSpan.svelte';
-    import MyRange from './components/MyRangeInput.svelte';
-	import TestButton from './components/TestButton.svelte';
+	import MyCheckbox from "./components/input/MyCheckboxInput.svelte";
+	import MyNumber from "./components/span/MyNumberSpan.svelte";
+	import MyPercent from "./components/span/MyPercentSpan.svelte";
+	import MyRange from "./components/input/MyRangeInput.svelte";
+	import TestButton from "./components/button/TestButton.svelte";
 </script>
 
+<header>Header</header>
 <main>
 	<h1>Crestron-Svelte Demo</h1>
+
+	<div>Viewport Width: {window.visualViewport?.width}</div>
+	<div>Inner Width: {window.innerWidth}</div>
+	<div>Outer Width: {window.outerWidth}</div>
+
+	<div>Viewport Height: {window.visualViewport?.height}</div>
+	<div>Inner Height: {window.innerHeight}</div>
+	<div>Outer Height: {window.outerHeight}</div>
 
 	<div>
 		<MyNumber id="ab" />
@@ -31,6 +37,7 @@
 		<MyPercent id="speaker.level.percent" />
 	</div>
 </main>
+<footer>Footer</footer>
 
 <style>
 </style>
