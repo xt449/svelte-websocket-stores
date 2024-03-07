@@ -2,7 +2,7 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     /**
-     * TS-1070 (1.004.0046) runs ES2021
+     * TS-1070 (1.004.0046) runs ES2021 on Chrome (Android) 87
      */
     "target": "ES2021",
     "module": "ESNext",
