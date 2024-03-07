@@ -3,6 +3,7 @@
 
     export let id: string;
 
+	// Format: Boolean
     let value = booleans.get(`${id}.value`);
 </script>
 

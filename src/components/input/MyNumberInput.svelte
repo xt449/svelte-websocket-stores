@@ -3,10 +3,8 @@
 
 	export let id: string;
 
-	export let min: number, max: number;
-
 	// Format: Number
 	let value = numbers.get(`${id}.value`);
 </script>
 
-<input {id} type="range" {min} {max} bind:value={$value} />
+<input {id} type="number" bind:value={$value} />
