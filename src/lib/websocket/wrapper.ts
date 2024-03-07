@@ -1,102 +1,117 @@
+import { get, readable, type Subscriber } from 'svelte/store';
 import { booleans, numbers, strings } from './store'
 
 const SERVER_IP = "192.168.1.2";
 
 class WebSocketWrapper {
-    private ws: WebSocket;
+    private ws?: WebSocket;
+    private readonly outboundQueue: string[] = [];
+    private setConnectionState?: Subscriber<boolean>;
+    connectionStore;
 
     constructor() {
-        console.log("Starting WebSocket...");
-        this.ws = new WebSocket(`ws://${SERVER_IP}:50080`);
-        this.initWebSocketListeners();
+        this.connectionStore = readable(false, (set) => {
+            this.setConnectionState = set;
+        });
+
+        // Force store setup
+        get(this.connectionStore);
     }
 
-    private async restart() {
-        console.log("Restarting WebSocket...");
-        this.ws = new WebSocket(`ws://${SERVER_IP}:50080`);
-        this.initWebSocketListeners();
-        await this.waitForConnectionAsync();
-        console.log("Connected");
-    }
+    start() {
+        if(this.ws?.readyState === WebSocket.OPEN) {
+            return;
+        }
 
-    private initWebSocketListeners() {
+        console.info("WebSocket starting");
+
+        // Start networking
+        this.ws = new WebSocket(`ws://${SERVER_IP}:50080`);
+        
+        // Init listenters
+        this.ws.onopen = event => {
+            console.info("WebSocket connected");
+            this.setConnectionState!(true);
+            let message;
+            let length = this.outboundQueue.length;
+            for(let i = 0; i < length; i++) {
+                message = this.outboundQueue.pop();
+                if(message) {
+                    this.queueSend(message);
+                }
+            }
+        }
         this.ws.onerror = event => {
-            console.log("Websocket error:");
-            console.log(event);
+            console.info("WebSocket error:");
+            console.error(event);
         };
         this.ws.onclose = event => {
-            console.log("WebSocket closed: Reconnecting in 10 seconds...")
-            setTimeout(() => this.restart(), 10_000);
+            console.info("WebSocket closed: Reconnecting in 10 seconds...")
+            this.setConnectionState!(false);
+            setTimeout(() => this.start(), 10_000);
         };
+        // This could be initialized only once WebSocket "open" event is triggered
         this.ws.onmessage = event => {
-            var payload = JSON.parse(event.data);
+            let payload = JSON.parse(event.data);
             switch (payload.type) {
                 case "boolean": {
-                    console.log(`remote boolean update ${payload.id} = ${payload.value}`);
+                    console.debug(`remote boolean update ${payload.id} = ${payload.value}`);
                     booleans.get(payload.id).setLocally(Boolean(payload.value));
-                    // remoteBooleanHandler(payload.id, Boolean(payload.value));
                     break;
                 }
                 case "integer": {
-                    console.log(`remote integer update ${payload.id} = ${payload.value}`);
+                    console.debug(`remote integer update ${payload.id} = ${payload.value}`);
                     numbers.get(payload.id).setLocally(Number(payload.value));
-                    // remoteIntegerHandler(payload.id, Number(payload.value));
                     break;
                 }
                 case "string": {
-                    console.log(`remote string update ${payload.id} = ${payload.value}`);
+                    console.debug(`remote string update ${payload.id} = ${payload.value}`);
                     strings.get(payload.id).setLocally(String(payload.value));
-                    // remoteStringHandler(payload.id, String(payload.value));
                     break;
                 }
             }
         };
     }
 
-    waitForConnectionAsync() {
-        return new Promise<void>(resolve => {
-            if (this.ws.readyState !== this.ws.OPEN) {
-                this.ws.addEventListener("open", () => resolve());
-            } else {
-                resolve();
-            }
-        });
-    }
+    private queueSend(message: string) {
+        if(this.ws?.readyState !== WebSocket.OPEN) {
+            console.warn("WebSocket not connected. Adding message to cache");
+            this.outboundQueue.push(message);
+            return;
+        }
 
-    get connected() {
-        return this.ws.readyState === this.ws.OPEN;
+        this.ws!.send(message);
     }
 
     sendBooleanValue(id: string, value: boolean) {
-        console.log(`local boolean update ${id} = ${value}`);
-        this.ws.send(`{"id":"${id}","type":"boolean","value":${Boolean(value)}}`);
+        console.debug(`local boolean update ${id} = ${value}`);
+        this.queueSend(`{"id":"${id}","type":"boolean","value":${Boolean(value)}}`);
     }
 
     sendNumberValue(id: string, value: number) {
-        console.log(`local number update ${id} = ${value}`);
-        this.ws.send(`{"id":"${id}","type":"integer","value":${Number(value)}}`);
+        console.debug(`local number update ${id} = ${value}`);
+        this.queueSend(`{"id":"${id}","type":"integer","value":${Number(value)}}`);
     }
 
     sendStringValue(id: string, value: string) {
-        console.log(`local string update ${id} = ${value}`);
-        this.ws.send(`{"id":"${id}","type":"string","value":"${String(value)}"}`);
+        console.debug(`local string update ${id} = ${value}`);
+        this.queueSend(`{"id":"${id}","type":"string","value":"${String(value)}"}`);
     }
 }
 
-export const webSocketWrapper = new WebSocketWrapper();
-(async () => {
-    await webSocketWrapper.waitForConnectionAsync();
-    console.log("Connected");
-})();
+const instance = new WebSocketWrapper();
+instance.start();
+
+export const connected = instance.connectionStore;
 
 export function sendBooleanValue(id: string, value: boolean) {
-    webSocketWrapper.sendBooleanValue(id, value);
+    instance.sendBooleanValue(id, value);
 }
 
 export function sendNumberValue(id: string, value: number) {
-    webSocketWrapper.sendNumberValue(id, value);
+    instance.sendNumberValue(id, value);
 }
 
 export function sendStringValue(id: string, value: string) {
-    webSocketWrapper.sendStringValue(id, value);
+    instance.sendStringValue(id, value);
 }
