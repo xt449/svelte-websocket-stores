@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
+    "debug": "vite dev",
     "predev": "npm run build",
     "dev": "start ./dist/index.html",
     "build": "vite build",
