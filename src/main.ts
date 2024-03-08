@@ -1,5 +1,5 @@
 // Import to start WebSocket ASAP
-import '$lib/websocket/wrapper';
+import '$lib/sws/wrapper';
 
 import './global.css';
 import App from './App.svelte';

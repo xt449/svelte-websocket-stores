@@ -174,7 +174,7 @@ input[type="range" i] {
     border-radius: 1vw;
 
     appearance: none;
-    background: var(--color-primary);
+    background-color: var(--color-primary);
 }
 input[type="range" i]::-webkit-slider-thumb {
     width: 2vw;
@@ -183,8 +183,13 @@ input[type="range" i]::-webkit-slider-thumb {
     border-radius: 1vw;
 
     appearance: none;
-    background: var(--color-secondary);
+    background-color: var(--color-secondary);
 }
 input[type="range" i]:active::-webkit-slider-thumb {
-    background: var(--color-active);
+    background-color: var(--color-active);
+}
+
+/* Dialogs / Modals */
+::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
 }

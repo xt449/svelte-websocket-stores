@@ -48,8 +48,7 @@ class WebSocketWrapper {
             }
         }
         this.ws.onerror = event => {
-            console.info("WebSocket error:");
-            console.error(event);
+            console.warn("WebSocket error:", event);
         };
         this.ws.onclose = event => {
             console.info("WebSocket closed: Reconnecting in 10 seconds...")

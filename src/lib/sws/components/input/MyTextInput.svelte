@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { strings } from "$lib/websocket/store";
+	import { strings } from "$lib/sws/store";
 
 	export let id: string;
 
