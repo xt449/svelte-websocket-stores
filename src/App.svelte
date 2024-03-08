@@ -24,27 +24,29 @@
     }
 </script>
 
-<dialog bind:this={disconnectedDialog} class="red" style="z-index:999;"><h1>Connecting to processor...</h1></dialog>
+<dialog open bind:this={disconnectedDialog} style="background-color:#000;color:#F00;font-size:2rem;z-index:999;"><h1>Connecting to processor...</h1></dialog>
 <header>Header</header>
 <main>
 	<h1>Crestron-Svelte Demo</h1>
 
-	<div>Viewport Width: {window.visualViewport?.width}</div>
-	<div>Inner Width: {window.innerWidth}</div>
-	<div>Outer Width: {window.outerWidth}</div>
+	<div>Viewport: {window.visualViewport?.width} x {window.visualViewport?.height}</div>
+	<div>Window Inner: {window.innerWidth} x {window.innerHeight}</div>
 
-	<div>Viewport Height: {window.visualViewport?.height}</div>
-	<div>Inner Height: {window.innerHeight}</div>
-	<div>Outer Height: {window.outerHeight}</div>
+	<br>
 
 	<div>
-		<TestButton id="random" />
 		<MyNumber id="random" />
+		<TestButton id="random" />
 	</div>
 
 	<div>
 		<label for="mics.mute.value">Mics Mute</label>
 		<MyCheckbox id="mics.mute.value" />
+	</div>
+
+	<div>
+		<MyHoldableButton id="test.state">Holdable button</MyHoldableButton>
+		<MyToggleButton id="test.state">Toggle button</MyToggleButton>
 	</div>
 	
 	<div>
@@ -58,11 +60,6 @@
 	</div>
 
 	<div>
-		<MyHoldableButton id="test.state">Holdable button</MyHoldableButton>
-		<MyToggleButton id="test.state">Toggle button</MyToggleButton>
-	</div>
-
-	<div>
 		<label for="speaker.level.percent">Speaker Level</label>
 		<MyRangePercent id="speaker.level.percent.value" />
 		<MyPercent id="speaker.level.percent.value" />
@@ -71,7 +68,4 @@
 <footer>Footer</footer>
 
 <style>
-	.red {
-		color: #F00;
-	}
 </style>

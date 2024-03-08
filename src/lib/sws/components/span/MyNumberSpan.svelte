@@ -3,7 +3,7 @@
 
 	export let id: string;
 
-	let value = numbers.get(`${id}.value`);
+	let value = numbers.get(id);
 </script>
 
 <span>{$value}</span>

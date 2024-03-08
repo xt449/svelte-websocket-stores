@@ -4,7 +4,7 @@
 	export let id: string;
 
 	// Format: "yyyy-mm-dd"
-	let value = strings.get(`${id}.value`);
+	let value = strings.get(id);
 </script>
 
 <input {id} type="date" bind:value={$value} />

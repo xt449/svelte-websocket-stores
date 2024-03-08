@@ -3,7 +3,7 @@
 
     export let id: string;
 
-    let value = numbers.get(`${id}.value`);
+    let value = numbers.get(id);
 
     function randomize() {
         $value = Math.floor(Math.random() * 999);
