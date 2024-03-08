@@ -5,7 +5,9 @@ const SERVER_IP = "192.168.1.2";
 
 class WebSocketWrapper {
     private ws?: WebSocket;
-    private readonly outboundQueue: string[] = [];
+    private readonly booleanQueue: { [id: string]: boolean} = {};
+    private readonly numberQueue: { [id: string]: number} = {};
+    private readonly stringQueue: { [id: string]: string} = {};
     private setConnectionState?: Subscriber<boolean>;
     connectionStore;
 
@@ -16,9 +18,11 @@ class WebSocketWrapper {
 
         // Force store setup
         get(this.connectionStore);
+
+        this.start();
     }
 
-    start() {
+    private start() {
         if(this.ws?.readyState === WebSocket.OPEN) {
             return;
         }
@@ -32,13 +36,15 @@ class WebSocketWrapper {
         this.ws.onopen = event => {
             console.info("WebSocket connected");
             this.setConnectionState!(true);
-            let message;
-            let length = this.outboundQueue.length;
-            for(let i = 0; i < length; i++) {
-                message = this.outboundQueue.pop();
-                if(message) {
-                    this.queueSend(message);
-                }
+
+            for(let [id, value] of Object.entries(this.booleanQueue)) {
+                this.sendBooleanValue(id, value);
+            }
+            for(let [id, value] of Object.entries(this.numberQueue)) {
+                this.sendNumberValue(id, value);
+            }
+            for(let [id, value] of Object.entries(this.stringQueue)) {
+                this.sendStringValue(id, value);
             }
         }
         this.ws.onerror = event => {
@@ -73,34 +79,44 @@ class WebSocketWrapper {
         };
     }
 
-    private queueSend(message: string) {
+    sendBooleanValue(id: string, value: boolean) {
+        console.debug(`local boolean update ${id} = ${value}`);
+
         if(this.ws?.readyState !== WebSocket.OPEN) {
-            console.warn("WebSocket not connected. Adding message to cache");
-            this.outboundQueue.push(message);
+            console.warn("WebSocket not connected. Adding to boolean queue");
+            this.booleanQueue[id] = value;
             return;
         }
 
-        this.ws!.send(message);
-    }
-
-    sendBooleanValue(id: string, value: boolean) {
-        console.debug(`local boolean update ${id} = ${value}`);
-        this.queueSend(`{"id":"${id}","type":"boolean","value":${Boolean(value)}}`);
+        this.ws.send(`{"id":"${id}","type":"boolean","value":${Boolean(value)}}`);
     }
 
     sendNumberValue(id: string, value: number) {
         console.debug(`local number update ${id} = ${value}`);
-        this.queueSend(`{"id":"${id}","type":"integer","value":${Number(value)}}`);
+
+        if(this.ws?.readyState !== WebSocket.OPEN) {
+            console.warn("WebSocket not connected. Adding to number queue");
+            this.numberQueue[id] = value;
+            return;
+        }
+
+        this.ws.send(`{"id":"${id}","type":"integer","value":${Number(value)}}`);
     }
 
     sendStringValue(id: string, value: string) {
         console.debug(`local string update ${id} = ${value}`);
-        this.queueSend(`{"id":"${id}","type":"string","value":"${String(value)}"}`);
+
+        if(this.ws?.readyState !== WebSocket.OPEN) {
+            console.warn("WebSocket not connected. Adding to string queue");
+            this.stringQueue[id] = value;
+            return;
+        }
+
+        this.ws.send(`{"id":"${id}","type":"string","value":"${String(value)}"}`);
     }
 }
 
 const instance = new WebSocketWrapper();
-instance.start();
 
 export const connected = instance.connectionStore;
 
