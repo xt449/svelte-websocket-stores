@@ -9,7 +9,8 @@
 	import MyPercent from "$lib/sws/components/span/MyPercentSpan.svelte";
 	import MyRangePercent from "$lib/sws/components/input/MyRangePercentInput.svelte";
 	import MyHoldableButton from "$lib/sws/components/button/MyHoldableButton.svelte";
-    import MyToggleButton from "$lib/sws/components/button/MyToggleButton.svelte";
+    import MyTogglableButton from "$lib/sws/components/button/MyTogglableButton.svelte";
+    import MyTogglableStateButton from "$lib/sws/components/button/MyTogglableStateButton.svelte";
 
 	let disconnectedDialog: HTMLDialogElement;
 
@@ -40,16 +41,14 @@
 	</div>
 
 	<div>
-		<label for="mics.mute.value">Mics Mute</label>
-		<MyCheckbox id="mics.mute.value" />
+		<MyHoldableButton id="test.state">Holdable button</MyHoldableButton>
+		<MyTogglableButton id="test.state">Toggle button</MyTogglableButton>
 	</div>
 
+	<br>
+
 	<div>
-		<MyHoldableButton id="test.state">Holdable button</MyHoldableButton>
-		<MyToggleButton id="test.state">Toggle button</MyToggleButton>
-	</div>
-	
-	<div>
+		<label for="speaker.level.percent.value">Speaker Level:</label>
 		{#if $speakerVolume < ANALOG_MIN + 4096}
 			<span>quiet</span>
 		{:else if $speakerVolume > ANALOG_MAX - 4096}
@@ -57,12 +56,15 @@
 		{:else}
 			<span>Normal</span>
 		{/if}
-	</div>
-
-	<div>
-		<label for="speaker.level.percent">Speaker Level</label>
-		<MyRangePercent id="speaker.level.percent.value" />
-		<MyPercent id="speaker.level.percent.value" />
+		<div style="display:flex;flex-direction:row;align-items:center;justify-content:center;">
+			<!-- <MyCheckbox id="speaker.mute.value" /> -->
+			<MyTogglableStateButton id="speaker.mute.value">
+				<img slot="false" src="./assets/dazzle-line/volume-min-svgrepo-com.svg" class="svg-white" width="50" />
+				<img slot="true" src="./assets/dazzle-line/volume-xmark-svgrepo-com.svg" class="svg-white" width="50" />
+			</MyTogglableStateButton>
+			<div style="width:50vw;"><MyRangePercent id="speaker.level.percent.value" /></div>
+			<span style="width:3vw;"><MyPercent id="speaker.level.percent.value" /></span>
+		</div>
 	</div>
 </main>
 <footer>Footer</footer>

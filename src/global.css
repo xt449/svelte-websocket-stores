@@ -193,3 +193,8 @@ input[type="range" i]:active::-webkit-slider-thumb {
 ::backdrop {
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+/* SVG Filters */
+.svg-white {
+    filter: invert();
+}

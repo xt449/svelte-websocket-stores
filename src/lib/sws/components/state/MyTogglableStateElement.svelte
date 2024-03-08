@@ -10,7 +10,7 @@
 	let state = booleans.get(id);
 </script>
 
-{#if state}
+{#if $state}
 	<slot name="true"></slot>
 {:else}
 	<slot name="false"></slot>
