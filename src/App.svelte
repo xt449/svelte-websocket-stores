@@ -24,7 +24,7 @@
     }
 </script>
 
-<dialog open bind:this={disconnectedDialog} style="background-color:#000;color:#F00;font-size:2rem;z-index:999;"><h1>Connecting to processor...</h1></dialog>
+<dialog bind:this={disconnectedDialog} style="background-color:#000;color:#F00;font-size:2rem;z-index:999;"><h1>Connecting to processor...</h1></dialog>
 <header>Header</header>
 <main>
 	<h1>Crestron-Svelte Demo</h1>
