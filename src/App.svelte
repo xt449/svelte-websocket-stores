@@ -3,12 +3,12 @@
 	import { connected } from "$lib/sws/wrapper";
 	import { numbers } from "$lib/sws/store";
 
-	import MyNumber from "$lib/sws/components/span/SwsNumberSpan.svelte";
-	import MyPercent from "$lib/sws/components/span/SwsPercentSpan.svelte";
-	import MyRangePercent from "$lib/sws/components/input/SwsRangePercentInput.svelte";
-	import MyHoldableButton from "$lib/sws/components/button/SwsHoldableButton.svelte";
-    import MyTogglableButton from "$lib/sws/components/button/SwsTogglableButton.svelte";
-    import MyTogglableStateButton from "$lib/sws/components/button/SwsTogglableStateButton.svelte";
+	import NumberSpan from "$lib/sws/components/span/NumberSpan.svelte";
+	import PercentSpan from "$lib/sws/components/span/PercentSpan.svelte";
+	import RangePercentInput from "$lib/sws/components/input/RangePercentInput.svelte";
+	import HoldableButton from "$lib/sws/components/button/HoldableButton.svelte";
+    import TogglableButton from "$lib/sws/components/button/TogglableButton.svelte";
+    import TogglableStateButton from "$lib/sws/components/button/TogglableStateButton.svelte";
 
 	let disconnectedDialog: HTMLDialogElement;
 
@@ -36,12 +36,12 @@
 	<br>
 
 	<div>
-		<MyNumber id="random" />
+		<NumberSpan id="random" />
 	</div>
 
 	<div>
-		<MyHoldableButton id="test.state">Holdable button</MyHoldableButton>
-		<MyTogglableButton id="test.state">Toggle button</MyTogglableButton>
+		<HoldableButton id="test.state">Holdable button</HoldableButton>
+		<TogglableButton id="test.state">Toggle button</TogglableButton>
 	</div>
 
 	<br>
@@ -57,12 +57,12 @@
 		{/if}
 		<div style="display:flex;flex-direction:row;align-items:center;justify-content:center;">
 			<!-- <MyCheckbox id="speaker.mute.value" /> -->
-			<MyTogglableStateButton id="speaker.mute.value">
+			<TogglableStateButton id="speaker.mute.value">
 				<img slot="false" src="./assets/dazzle-line/volume-min-svgrepo-com.svg" class="svg-white" width="50" />
 				<img slot="true" src="./assets/dazzle-line/volume-xmark-svgrepo-com.svg" class="svg-white" width="50" />
-			</MyTogglableStateButton>
-			<div style="width:50vw;"><MyRangePercent id="speaker.level.percent.value" /></div>
-			<span style="width:3vw;"><MyPercent id="speaker.level.percent.value" /></span>
+			</TogglableStateButton>
+			<div style="width:50vw;"><RangePercentInput id="speaker.level.percent.value" /></div>
+			<span style="width:3vw;"><PercentSpan id="speaker.level.percent.value" /></span>
 		</div>
 	</div>
 </main>
