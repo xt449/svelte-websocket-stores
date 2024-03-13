@@ -3,24 +3,24 @@
 	import { connected } from "$lib/sws/wrapper";
 	import { numbers } from "$lib/sws/store";
 
-	import MyCheckbox from "$lib/sws/components/input/MyCheckboxInput.svelte";
-	import TestButton from "$lib/sws/components/button/TestButton.svelte";
-	import MyNumber from "$lib/sws/components/span/MyNumberSpan.svelte";
-	import MyPercent from "$lib/sws/components/span/MyPercentSpan.svelte";
-	import MyRangePercent from "$lib/sws/components/input/MyRangePercentInput.svelte";
-	import MyHoldableButton from "$lib/sws/components/button/MyHoldableButton.svelte";
-    import MyTogglableButton from "$lib/sws/components/button/MyTogglableButton.svelte";
-    import MyTogglableStateButton from "$lib/sws/components/button/MyTogglableStateButton.svelte";
+	import MyNumber from "$lib/sws/components/span/SwsNumberSpan.svelte";
+	import MyPercent from "$lib/sws/components/span/SwsPercentSpan.svelte";
+	import MyRangePercent from "$lib/sws/components/input/SwsRangePercentInput.svelte";
+	import MyHoldableButton from "$lib/sws/components/button/SwsHoldableButton.svelte";
+    import MyTogglableButton from "$lib/sws/components/button/SwsTogglableButton.svelte";
+    import MyTogglableStateButton from "$lib/sws/components/button/SwsTogglableStateButton.svelte";
 
 	let disconnectedDialog: HTMLDialogElement;
 
 	let speakerVolume = numbers.get("speaker.level.percent.value");
 
     $: {
+		if(!window.location.href.includes("dist")) {
         if($connected) {
             disconnectedDialog?.close();
         } else {
             disconnectedDialog?.showModal();
+			}
         }
     }
 </script>
@@ -37,7 +37,6 @@
 
 	<div>
 		<MyNumber id="random" />
-		<TestButton id="random" />
 	</div>
 
 	<div>

@@ -96,7 +96,7 @@ h1 {
 
 /* Button */
 button, input[type="button"] {
-    padding: 1vw;
+    /* padding: 1vw; */
     border: none;
 
     display: inline-block;
