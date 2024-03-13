@@ -1,25 +1,21 @@
 <script lang="ts">
-    import { booleans } from "$lib/sws/store";
+	import { booleans } from "$lib/sws/store";
 
-    export let id: string;
+	let clazz: string = "";
+	export { clazz as class }
+	export let id: string;
 
-    let state = booleans.get(id);
+	let state = booleans.get(id);
 
-    function toggle() {
-        $state = !$state;
-    }
+	function toggle() {
+		$state = !$state;
+	}
 </script>
 
-<button on:click={toggle}>
-    {#if $state}
-        <slot name="true" />
-    {:else}
-        <slot name="false" />
-    {/if}
+<button class={clazz} on:click={toggle}>
+	{#if $state}
+		<slot name="true" />
+	{:else}
+		<slot name="false" />
+	{/if}
 </button>
-
-<style>
-    button {
-        background: none;
-    }
-</style>
