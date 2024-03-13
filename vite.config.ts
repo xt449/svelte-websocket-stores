@@ -5,11 +5,19 @@ import path from "path"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [svelte(), viteSingleFile()],
+	plugins: [
+		svelte({
+			onwarn(warning, defaultHandler) {
+				if (warning.code === "a11y-missing-attribute") return;
+				defaultHandler!(warning);
+			},
+		}),
+		viteSingleFile()
+	],
 	resolve: {
 		alias: {
-		  $lib: path.resolve('./src/lib'),
-		  $utils: path.resolve('./src/utils')
+			$lib: path.resolve('./src/lib'),
+			$utils: path.resolve('./src/utils')
 		}
-	  }
+	}
 });
