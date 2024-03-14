@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ANALOG_MAX, ANALOG_MIN } from "$lib/crestron";
+	import { ANALOG_MAX, ANALOG_MIN } from "$lib/crestron";
 	import { connected } from "$lib/sws/wrapper";
 	import { numbers } from "$lib/sws/store";
 
@@ -7,25 +7,25 @@
 	import PercentSpan from "$lib/sws/components/span/PercentSpan.svelte";
 	import RangePercentInput from "$lib/sws/components/input/RangePercentInput.svelte";
 	import HoldableButton from "$lib/sws/components/button/HoldableButton.svelte";
-    import TogglableButton from "$lib/sws/components/button/TogglableButton.svelte";
-    import TogglableStateButton from "$lib/sws/components/button/TogglableStateButton.svelte";
+	import TogglableButton from "$lib/sws/components/button/TogglableButton.svelte";
+	import TogglableStateButton from "$lib/sws/components/button/TogglableStateButton.svelte";
 
 	let disconnectedDialog: HTMLDialogElement;
 
 	let speakerVolume = numbers.get("speaker.level.percent.value");
 
-    $: {
-		if(!window.location.href.includes("dist")) {
-        if($connected) {
-            disconnectedDialog?.close();
-        } else {
-            disconnectedDialog?.showModal();
-			}
-        }
-    }
+	$: {
+		if ($connected) {
+			disconnectedDialog?.close();
+		} else {
+			disconnectedDialog?.showModal();
+		}
+	}
 </script>
 
-<dialog bind:this={disconnectedDialog} style="background-color:#000;color:#F00;font-size:2rem;z-index:999;"><h1>Connecting to processor...</h1></dialog>
+<dialog bind:this={disconnectedDialog}>
+	<h1>Connecting to processor...</h1>
+</dialog>
 <header>Header</header>
 <main>
 	<h1>Crestron-Svelte Demo</h1>
@@ -33,7 +33,7 @@
 	<div>Viewport: {window.visualViewport?.width} x {window.visualViewport?.height}</div>
 	<div>Window Inner: {window.innerWidth} x {window.innerHeight}</div>
 
-	<br>
+	<br />
 
 	<div>
 		<NumberSpan id="random" />
@@ -44,7 +44,7 @@
 		<TogglableButton id="test.state">Toggle button</TogglableButton>
 	</div>
 
-	<br>
+	<br />
 
 	<div>
 		<label for="speaker.level.percent.value">Speaker Level:</label>
@@ -61,12 +61,30 @@
 				<img slot="false" src="./assets/untitled-ui/volume-max.svg" class="svg-white" width="50" />
 				<img slot="true" src="./assets/untitled-ui/volume-x.svg" class="svg-white" width="50" />
 			</TogglableStateButton>
-			<div style="width:50vw;"><RangePercentInput id="speaker.level.percent.value" /></div>
-			<span style="width:3vw;"><PercentSpan id="speaker.level.percent.value" /></span>
+			<div style="width:50vw;">
+				<RangePercentInput id="speaker.level.percent.value" />
+			</div>
+			<span style="width:3vw;">
+				<PercentSpan id="speaker.level.percent.value" />
+			</span>
 		</div>
 	</div>
 </main>
 <footer>Footer</footer>
 
 <style>
+	dialog {
+		border: 3px solid #fff;
+		border-radius: 16px;
+		background-color: #000;
+		font-size: 2rem;
+		color: #f40;
+		animation: fade 2s infinite;
+	}
+
+	@keyframes fade {
+		50% {
+			color: #620;
+		}
+	}
 </style>
