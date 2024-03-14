@@ -58,8 +58,8 @@
 		<div style="display:flex;flex-direction:row;align-items:center;justify-content:center;">
 			<!-- <MyCheckbox id="speaker.mute.value" /> -->
 			<TogglableStateButton id="speaker.mute.value">
-				<img slot="false" src="./assets/dazzle-line/volume-min-svgrepo-com.svg" class="svg-white" width="50" />
-				<img slot="true" src="./assets/dazzle-line/volume-xmark-svgrepo-com.svg" class="svg-white" width="50" />
+				<img slot="false" src="./assets/untitled-ui/volume-max.svg" class="svg-white" width="50" />
+				<img slot="true" src="./assets/untitled-ui/volume-x.svg" class="svg-white" width="50" />
 			</TogglableStateButton>
 			<div style="width:50vw;"><RangePercentInput id="speaker.level.percent.value" /></div>
 			<span style="width:3vw;"><PercentSpan id="speaker.level.percent.value" /></span>
