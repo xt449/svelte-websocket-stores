@@ -10,7 +10,7 @@
     import { booleans } from "$lib/sws/store";
 
 	let clazz: string = "";
-	export { clazz as class }
+	export { clazz as class };
 
 	export let id: string;
 
@@ -32,7 +32,7 @@
 		pressStore?.set(false);
 		clearTimeout(timeout);
 
-		if(timeout) {
+		if (timeout) {
 			timeout = undefined;
 
 			tapStore?.set(true);

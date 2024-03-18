@@ -8,7 +8,7 @@
 	import { booleans } from "$lib/sws/store";
 
 	let clazz: string = "";
-	export { clazz as class }
+	export { clazz as class };
 
 	export let id: string;
 
