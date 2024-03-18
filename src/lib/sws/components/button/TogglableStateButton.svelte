@@ -1,3 +1,9 @@
+<!--
+    @component
+    Websocket Stores:
+    - `${id}.state`: boolean
+-->
+
 <script lang="ts">
 	import { booleans } from "$lib/sws/store";
 
@@ -5,7 +11,7 @@
 	export { clazz as class }
 	export let id: string;
 
-	let state = booleans.get(id);
+	let state = booleans.get(`${id}.state`);
 
 	function toggle() {
 		$state = !$state;
