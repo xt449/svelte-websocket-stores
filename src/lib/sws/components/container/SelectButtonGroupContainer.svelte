@@ -3,12 +3,12 @@
     Websocket Stores:
     - `${id}.count`: number - Number of elements
     - `${id}.selected`: number - Selected element index (index starts at 0)
-    - `${id}.visible`: string - Comma separated visible elements by index (index starts at 0)
-    - `${id}.labels[${index}]`: string - Labels for each element (index starts at 0)
+    - `${id}.visibles[${index}]`: boolean - Visibility for each element (index starts at 0)
+    - `${id}.labels[${index}]`: string - Label for each element (index starts at 0)
 -->
 
 <script lang="ts">
-    import { numbers, strings } from "$lib/sws/store";
+    import { booleans, numbers, strings } from "$lib/sws/store";
     import { derived, type Readable } from "svelte/store";
 
     let clazz: string = "";
@@ -26,14 +26,15 @@
      * ...
      */
     let selected = numbers.get(`${id}.selected`);
-    let visible = strings.get(`${id}.visible`);
-	let visibleArray = derived(visible, (value) => value.split(","));
 
+    let visibles: Readable<boolean[]>;
     let labels: Readable<string[]>;
 
     $: {
-        console.warn("!!! Recalculating labels string array store !!!");
-        labels = derived(Array.from(Array($count).keys(), (i) => strings.get(`${id}.labels[${i}]`)), value => value);
+        console.warn("!!! Recalculating array stores !!!");
+		let indexes = Array($count).keys();
+        visibles = derived(Array.from(indexes, (i) => booleans.get(`${id}.visibles[${i}]`)), value => value);
+        labels = derived(Array.from(indexes, (i) => strings.get(`${id}.labels[${i}]`)), value => value);
     }
 
     // DEBUG
@@ -44,7 +45,7 @@
 
 <span class={clazz}>
     {#each { length: $count } as _, index}
-        {#if $visibleArray.includes(String(index))}
+        {#if $visibles[index]}
             <button class={memberClass} class:selected={$selected == index} on:click={() => $selected = index}>{$labels[index]}</button>
         {/if}
     {/each}
