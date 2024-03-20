@@ -100,7 +100,7 @@ class WebSocketWrapper {
 
 		// Prepend GLOBAL_PREFIX is there is no valid prefix
 		if (!(id.startsWith(GLOBAL_PREFIX) || id.startsWith(LOCAL_PREFIX))) {
-			id = GLOBAL_PREFIX + "id";
+			id = GLOBAL_PREFIX + id;
 		}
 
 		this.ws.send(`{"id":"${id}","type":"boolean","value":${Boolean(value)}}`);
@@ -117,7 +117,7 @@ class WebSocketWrapper {
 
 		// Prepend GLOBAL_PREFIX is there is no valid prefix
 		if (!(id.startsWith(GLOBAL_PREFIX) || id.startsWith(LOCAL_PREFIX))) {
-			id = GLOBAL_PREFIX + "id";
+			id = GLOBAL_PREFIX + id;
 		}
 
 		this.ws.send(`{"id":"${id}","type":"integer","value":${Number(value)}}`);
@@ -134,7 +134,7 @@ class WebSocketWrapper {
 
 		// Prepend GLOBAL_PREFIX is there is no valid prefix
 		if (!(id.startsWith(GLOBAL_PREFIX) || id.startsWith(LOCAL_PREFIX))) {
-			id = GLOBAL_PREFIX + "id";
+			id = GLOBAL_PREFIX + id;
 		}
 
 		this.ws.send(`{"id":"${id}","type":"string","value":"${String(value)}"}`);
