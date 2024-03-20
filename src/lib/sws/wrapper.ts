@@ -1,9 +1,14 @@
 import { get, readable, type Subscriber } from 'svelte/store';
 import { booleans, logStoreIds, numbers, strings } from './store'
 
+// Start of Config
 const SERVER_IP = "192.168.1.2";
+const LOCAL_ID = "tp1";
+// End of Config
+
 const GLOBAL_PREFIX = "global.";
-const LOCAL_PREFIX = "tp1.";
+const LOCAL_PREFIX = LOCAL_ID + ".";
+const LOCAL_PREFIX_PLACEHOLDER = "local.";
 
 class WebSocketWrapper {
 	private ws?: WebSocket;
@@ -63,7 +68,6 @@ class WebSocketWrapper {
 			this.setConnectionState!(false);
 			setTimeout(() => this.start(), 10_000);
 		};
-		// This could be initialized only once WebSocket "open" event is triggered
 		this.ws.onmessage = event => {
 			let payload = JSON.parse(event.data);
 
@@ -92,15 +96,17 @@ class WebSocketWrapper {
 	sendBooleanValue(id: string, value: boolean) {
 		console.debug(`local-> boolean update ${id} = ${value}`);
 
+		// Add to queue if WebSocket closed
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			console.warn("WebSocket not connected. Adding to boolean queue");
 			this.booleanQueue[id] = value;
 			return;
 		}
 
-		// Prepend GLOBAL_PREFIX is there is no valid prefix
-		if (!(id.startsWith(GLOBAL_PREFIX) || id.startsWith(LOCAL_PREFIX))) {
-			id = GLOBAL_PREFIX + id;
+		// Prepend local id instead of placeholder
+		if (id.startsWith(LOCAL_PREFIX_PLACEHOLDER)) {
+			// Cut off period in prefix with `- 1`
+			id = LOCAL_ID + id.substring(LOCAL_PREFIX_PLACEHOLDER.length - 1);
 		}
 
 		this.ws.send(`{"id":"${id}","type":"boolean","value":${Boolean(value)}}`);
@@ -109,15 +115,17 @@ class WebSocketWrapper {
 	sendNumberValue(id: string, value: number) {
 		console.debug(`local-> number update ${id} = ${value}`);
 
+		// Add to queue if WebSocket closed
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			console.warn("WebSocket not connected. Adding to number queue");
 			this.numberQueue[id] = value;
 			return;
 		}
 
-		// Prepend GLOBAL_PREFIX is there is no valid prefix
-		if (!(id.startsWith(GLOBAL_PREFIX) || id.startsWith(LOCAL_PREFIX))) {
-			id = GLOBAL_PREFIX + id;
+		// Prepend local id instead of placeholder
+		if (id.startsWith(LOCAL_PREFIX_PLACEHOLDER)) {
+			// Cut off period in prefix with `- 1`
+			id = LOCAL_ID + id.substring(LOCAL_PREFIX_PLACEHOLDER.length - 1);
 		}
 
 		this.ws.send(`{"id":"${id}","type":"integer","value":${Number(value)}}`);
@@ -126,15 +134,17 @@ class WebSocketWrapper {
 	sendStringValue(id: string, value: string) {
 		console.debug(`local-> string update ${id} = ${value}`);
 
+		// Add to queue if WebSocket closed
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			console.warn("WebSocket not connected. Adding to string queue");
 			this.stringQueue[id] = value;
 			return;
 		}
 
-		// Prepend GLOBAL_PREFIX is there is no valid prefix
-		if (!(id.startsWith(GLOBAL_PREFIX) || id.startsWith(LOCAL_PREFIX))) {
-			id = GLOBAL_PREFIX + id;
+		// Prepend local id instead of placeholder
+		if (id.startsWith(LOCAL_PREFIX_PLACEHOLDER)) {
+			// Cut off period in prefix with `- 1`
+			id = LOCAL_ID + id.substring(LOCAL_PREFIX_PLACEHOLDER.length - 1);
 		}
 
 		this.ws.send(`{"id":"${id}","type":"string","value":"${String(value)}"}`);
