@@ -78,8 +78,8 @@ class WebSocketWrapper {
 						booleans.get(payload.id).setLocally(Boolean(payload.value));
 						break;
 					}
-					case "integer": {
-						console.debug(`<-remote integer update ${payload.id} = ${payload.value}`);
+					case "number": {
+						console.debug(`<-remote number update ${payload.id} = ${payload.value}`);
 						numbers.get(payload.id).setLocally(Number(payload.value));
 						break;
 					}
@@ -128,7 +128,7 @@ class WebSocketWrapper {
 			id = LOCAL_ID + id.substring(LOCAL_PREFIX_PLACEHOLDER.length - 1);
 		}
 
-		this.ws.send(`{"id":"${id}","type":"integer","value":${Number(value)}}`);
+		this.ws.send(`{"id":"${id}","type":"number","value":${Number(value)}}`);
 	}
 
 	sendStringValue(id: string, value: string) {
