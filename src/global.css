@@ -4,10 +4,7 @@ broken {
 }
 
 :root {
-	font-family: Arial, Helvetica, sans-serif;
-	font-weight: 400;
 	font-size: 1rem;
-
 	color: #FFF;
 	background-color: #222;
 
@@ -45,6 +42,9 @@ body {
 /* Disable selecting */
 * {
 	user-select: none;
+
+	font-family: Tahoma, Helvetica, Arial, sans-serif;
+	letter-spacing: 1px;
 }
 
 /* ALL Inputs */
@@ -57,10 +57,9 @@ body {
     vertical-align: middle;
 } */
 
+/* Fixes user agent stylesheet */
 button {
-	font-family: Arial, Helvetica, sans-serif;
-	font-weight: 400;
-	font-size: 1rem;
+	font-size: 1em;
 }
 
 /* Input Range: Volume */
