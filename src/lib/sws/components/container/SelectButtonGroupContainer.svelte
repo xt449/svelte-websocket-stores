@@ -32,9 +32,8 @@
 
     $: {
         console.warn("!!! Recalculating array stores !!!");
-		let indexes = Array($count).keys();
-        visibles = derived(Array.from(indexes, (i) => booleans.get(`${id}.visibles[${i}]`)), value => value);
-        labels = derived(Array.from(indexes, (i) => strings.get(`${id}.labels[${i}]`)), value => value);
+        visibles = derived(Array.from(Array($count).keys(), (i) => booleans.get(`${id}.visibles[${i}]`)), value => value);
+        labels = derived(Array.from(Array($count).keys(), (i) => strings.get(`${id}.labels[${i}]`)), value => value);
     }
 
     // DEBUG
