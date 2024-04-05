@@ -41,6 +41,8 @@ body {
 
 /* Disable selecting */
 * {
+	box-sizing: border-box;
+
 	user-select: none;
 
 	font-family: Tahoma, Helvetica, Arial, sans-serif;
