@@ -1,7 +1,7 @@
 <!--
-    @component
-    Websocket Stores:
-    - `${id}.press`: boolean
+	@component
+	Websocket Stores:
+	- `${id}.press`: boolean
 -->
 
 <script lang="ts">

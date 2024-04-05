@@ -1,13 +1,13 @@
 <!--
-    @component
-    Websocket Stores:
-    - `${id}.press`: boolean
-    - `${id}.hold`: boolean
-    - `${id}.tap`: boolean
+	@component
+	Websocket Stores:
+	- `${id}.press`: boolean
+	- `${id}.hold`: boolean
+	- `${id}.tap`: boolean
 -->
 
 <script lang="ts">
-    import { booleans } from "$lib/sws/store";
+	import { booleans } from "$lib/sws/store";
 
 	let clazz: string = "";
 	export { clazz as class };
