@@ -3,8 +3,8 @@
 	Websocket Stores:
 	- `${id}.count`: number - Number of elements
 	- `${id}.selected`: number - Selected element index (index starts at 0)
-	- `${id}.visibles[${index}]`: boolean - Visibility for each element (index starts at 0)
-	- `${id}.labels[${index}]`: string - Label for each element (index starts at 0)
+	- `${id}[${index}].visible`: boolean - Visibility for each element (index starts at 0)
+	- `${id}[${index}].label`: string - Label for each element (index starts at 0)
 -->
 
 <script lang="ts">
