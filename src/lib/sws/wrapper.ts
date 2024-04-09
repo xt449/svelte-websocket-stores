@@ -79,17 +79,17 @@ class WebSocketWrapper {
 
 			switch (payload.type) {
 				case "boolean": {
-					console.debug(`<-remote boolean update ${payload.id} = ${payload.value}`);
+					console.debug(`local<-remote boolean update ${payload.id} = ${payload.value}`);
 					booleans.get(payload.id).setLocally(Boolean(payload.value));
 					break;
 				}
 				case "number": {
-					console.debug(`<-remote number update ${payload.id} = ${payload.value}`);
+					console.debug(`local<-remote number update ${payload.id} = ${payload.value}`);
 					numbers.get(payload.id).setLocally(Number(payload.value));
 					break;
 				}
 				case "string": {
-					console.debug(`<-remote string update ${payload.id} = ${payload.value}`);
+					console.debug(`local<-remote string update ${payload.id} = ${payload.value}`);
 					strings.get(payload.id).setLocally(String(payload.value));
 					break;
 				}
@@ -98,7 +98,7 @@ class WebSocketWrapper {
 	}
 
 	sendBooleanValue(id: string, value: boolean) {
-		console.debug(`local-> boolean update ${id} = ${value}`);
+		console.debug(`boolean update ${id} = ${value}`);
 
 		// Add to queue if WebSocket closed
 		if (this.ws?.readyState !== WebSocket.OPEN) {
@@ -114,10 +114,12 @@ class WebSocketWrapper {
 		}
 
 		this.ws.send(`{"id":"${id}","type":"boolean","value":${Boolean(value)}}`);
+
+		console.info(`local->remote boolean update ${id} = ${value}`);
 	}
 
 	sendNumberValue(id: string, value: number) {
-		console.debug(`local-> number update ${id} = ${value}`);
+		console.debug(`number update ${id} = ${value}`);
 
 		// Add to queue if WebSocket closed
 		if (this.ws?.readyState !== WebSocket.OPEN) {
@@ -133,10 +135,12 @@ class WebSocketWrapper {
 		}
 
 		this.ws.send(`{"id":"${id}","type":"number","value":${Number(value)}}`);
+		
+		console.info(`local->remote number update ${id} = ${value}`);
 	}
 
 	sendStringValue(id: string, value: string) {
-		console.debug(`local-> string update ${id} = ${value}`);
+		console.debug(`string update ${id} = ${value}`);
 
 		// Add to queue if WebSocket closed
 		if (this.ws?.readyState !== WebSocket.OPEN) {
@@ -152,6 +156,8 @@ class WebSocketWrapper {
 		}
 
 		this.ws.send(`{"id":"${id}","type":"string","value":"${String(value)}"}`);
+		
+		console.info(`local->remote string update ${id} = ${value}`);
 	}
 }
 
