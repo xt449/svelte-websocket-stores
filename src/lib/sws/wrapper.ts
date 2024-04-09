@@ -71,23 +71,27 @@ class WebSocketWrapper {
 		this.ws.onmessage = event => {
 			let payload = JSON.parse(event.data);
 
-			if (payload.id.startsWith(GLOBAL_PREFIX) || payload.id.startsWith(LOCAL_PREFIX)) {
-				switch (payload.type) {
-					case "boolean": {
-						console.debug(`<-remote boolean update ${payload.id} = ${payload.value}`);
-						booleans.get(payload.id).setLocally(Boolean(payload.value));
-						break;
-					}
-					case "number": {
-						console.debug(`<-remote number update ${payload.id} = ${payload.value}`);
-						numbers.get(payload.id).setLocally(Number(payload.value));
-						break;
-					}
-					case "string": {
-						console.debug(`<-remote string update ${payload.id} = ${payload.value}`);
-						strings.get(payload.id).setLocally(String(payload.value));
-						break;
-					}
+			if (payload.id.startsWith(LOCAL_PREFIX)) {
+				payload.id = LOCAL_PREFIX_PLACEHOLDER + payload.id.substring(LOCAL_PREFIX.length)
+			} else if(!payload.id.startsWith(GLOBAL_PREFIX)) {
+				return;
+			}
+
+			switch (payload.type) {
+				case "boolean": {
+					console.debug(`<-remote boolean update ${payload.id} = ${payload.value}`);
+					booleans.get(payload.id).setLocally(Boolean(payload.value));
+					break;
+				}
+				case "number": {
+					console.debug(`<-remote number update ${payload.id} = ${payload.value}`);
+					numbers.get(payload.id).setLocally(Number(payload.value));
+					break;
+				}
+				case "string": {
+					console.debug(`<-remote string update ${payload.id} = ${payload.value}`);
+					strings.get(payload.id).setLocally(String(payload.value));
+					break;
 				}
 			}
 		};
