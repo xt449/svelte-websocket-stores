@@ -4,8 +4,6 @@
 	let timeout: NodeJS.Timeout | undefined;
 
 	function press() {
-		console.log("press");
-
 		timeout = setTimeout(() => {
 			timeout = undefined;
 
@@ -14,8 +12,6 @@
 	}
 
 	function release() {
-		console.log("release");
-
 		clearTimeout(timeout);
 
 		if (timeout) {
