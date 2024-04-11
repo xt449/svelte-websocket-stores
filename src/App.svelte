@@ -1,9 +1,12 @@
 <script lang="ts">
 	import DisconnectedDialog from "$lib/sws/components/DisconnectedDialog.svelte";
+	import BackdoorButton from "$lib/sws/components/BackdoorButton.svelte";
 </script>
 
 <div>
 	<DisconnectedDialog></DisconnectedDialog>
+	<BackdoorButton backdoorTrigger={() => location.reload()}></BackdoorButton>
+
 	<header>Header</header>
 	<main>Main</main>
 	<footer>Footer</footer>
