@@ -73,7 +73,7 @@ class WebSocketWrapper {
 
 			if (payload.id.startsWith(LOCAL_PREFIX)) {
 				payload.id = LOCAL_PREFIX_PLACEHOLDER + payload.id.substring(LOCAL_PREFIX.length)
-			} else if(!payload.id.startsWith(GLOBAL_PREFIX)) {
+			} else if (!payload.id.startsWith(GLOBAL_PREFIX)) {
 				return;
 			}
 
@@ -135,7 +135,7 @@ class WebSocketWrapper {
 		}
 
 		this.ws.send(`{"id":"${id}","type":"number","value":${Number(value)}}`);
-		
+
 		console.info(`local->remote number update ${id} = ${value}`);
 	}
 
@@ -156,7 +156,7 @@ class WebSocketWrapper {
 		}
 
 		this.ws.send(`{"id":"${id}","type":"string","value":"${String(value)}"}`);
-		
+
 		console.info(`local->remote string update ${id} = ${value}`);
 	}
 }

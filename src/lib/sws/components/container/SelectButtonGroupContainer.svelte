@@ -40,7 +40,7 @@
 <span class={clazz}>
 	{#each { length: $count } as _, index}
 		{#if $visibleArray[index]}
-			<button class={memberClass} class:selected={$selected == index} on:click={() => $selected = index}>{$labelArray[index]}</button>
+			<button class={memberClass} class:selected={$selected == index} on:click={() => ($selected = index)}>{$labelArray[index]}</button>
 		{/if}
 	{/each}
 </span>

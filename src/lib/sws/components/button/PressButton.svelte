@@ -24,5 +24,5 @@
 </script>
 
 <button class={clazz} class:active={$pressStore} on:pointerdown={press} on:pointerup={release} on:pointerout={release}>
-	<slot></slot>
+	<slot />
 </button>
