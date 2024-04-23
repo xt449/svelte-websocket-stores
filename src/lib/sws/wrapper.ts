@@ -3,12 +3,10 @@ import { booleans, logStoreIds, numbers, strings } from './store'
 
 // Start of Config
 const SERVER_IP = "192.168.1.2";
-const LOCAL_ID = "tp1";
+const LOCAL_ID_PREFIX = "tp1.";
 // End of Config
 
-const GLOBAL_PREFIX = "global.";
-const LOCAL_PREFIX = LOCAL_ID + ".";
-const LOCAL_PREFIX_PLACEHOLDER = "local.";
+const GLOBAL_ID_PREFIX = "global.";
 
 class WebSocketWrapper {
 	private ws?: WebSocket;
@@ -71,9 +69,12 @@ class WebSocketWrapper {
 		this.ws.onmessage = event => {
 			let payload = JSON.parse(event.data);
 
-			if (payload.id.startsWith(LOCAL_PREFIX)) {
-				payload.id = LOCAL_PREFIX_PLACEHOLDER + payload.id.substring(LOCAL_PREFIX.length)
-			} else if (!payload.id.startsWith(GLOBAL_PREFIX)) {
+			// Accept if prefixed by local or global ids
+			if (payload.id.startsWith(LOCAL_ID_PREFIX)) {
+				payload.id = payload.id.substring(LOCAL_ID_PREFIX.length)
+			} else if (payload.id.startsWith(GLOBAL_ID_PREFIX)) {
+				payload.id = payload.id.substring(GLOBAL_ID_PREFIX.length)
+			} else {
 				return;
 			}
 
@@ -107,13 +108,8 @@ class WebSocketWrapper {
 			return;
 		}
 
-		// Prepend local id instead of placeholder
-		if (id.startsWith(LOCAL_PREFIX_PLACEHOLDER)) {
-			// Cut off period in prefix with `- 1`
-			id = LOCAL_ID + id.substring(LOCAL_PREFIX_PLACEHOLDER.length - 1);
-		}
-
-		this.ws.send(`{"id":"${id}","type":"boolean","value":${Boolean(value)}}`);
+		// Prepend local id prefix
+		this.ws.send(`{"id":"${LOCAL_ID_PREFIX + id}","type":"boolean","value":${Boolean(value)}}`);
 
 		console.info(`local->remote boolean update ${id} = ${value}`);
 	}
@@ -128,13 +124,8 @@ class WebSocketWrapper {
 			return;
 		}
 
-		// Prepend local id instead of placeholder
-		if (id.startsWith(LOCAL_PREFIX_PLACEHOLDER)) {
-			// Cut off period in prefix with `- 1`
-			id = LOCAL_ID + id.substring(LOCAL_PREFIX_PLACEHOLDER.length - 1);
-		}
-
-		this.ws.send(`{"id":"${id}","type":"number","value":${Number(value)}}`);
+		// Prepend local id prefix
+		this.ws.send(`{"id":"${LOCAL_ID_PREFIX + id}","type":"number","value":${Number(value)}}`);
 
 		console.info(`local->remote number update ${id} = ${value}`);
 	}
@@ -149,13 +140,8 @@ class WebSocketWrapper {
 			return;
 		}
 
-		// Prepend local id instead of placeholder
-		if (id.startsWith(LOCAL_PREFIX_PLACEHOLDER)) {
-			// Cut off period in prefix with `- 1`
-			id = LOCAL_ID + id.substring(LOCAL_PREFIX_PLACEHOLDER.length - 1);
-		}
-
-		this.ws.send(`{"id":"${id}","type":"string","value":"${String(value)}"}`);
+		// Prepend local id prefix
+		this.ws.send(`{"id":"${LOCAL_ID_PREFIX + id}","type":"string","value":"${String(value)}"}`);
 
 		console.info(`local->remote string update ${id} = ${value}`);
 	}
