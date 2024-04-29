@@ -1,10 +1,7 @@
-import { get, readable, type Subscriber } from 'svelte/store';
-import { booleans, logStoreIds, numbers, strings } from './store'
+import { get, readable, type Subscriber } from "svelte/store";
+import { booleans, logStoreIds, numbers, strings } from "./store";
 
-// Start of Config
-const SERVER_IP = "192.168.1.2";
-const LOCAL_ID_PREFIX = "tp1.";
-// End of Config
+declare const sws_config: any;
 
 const GLOBAL_ID_PREFIX = "global.";
 
@@ -25,7 +22,17 @@ class WebSocketWrapper {
 		// Force store setup
 		get(this.connectionState);
 
-		this.start();
+		(async () => {
+			await new Promise<void>((resolve) => {
+				var element = document.createElement("script");
+				element.src = "./sws.js";
+				
+				element.onload = () => resolve();
+		
+				document.head.appendChild(element);
+			});
+			this.start();
+		})();
 	}
 
 	private start() {
@@ -36,7 +43,7 @@ class WebSocketWrapper {
 		console.info("WebSocket starting");
 
 		// Start networking
-		this.ws = new WebSocket(`ws://${SERVER_IP}:50080`);
+		this.ws = new WebSocket(`ws://${sws_config.server_ip}:50080`);
 
 		// Init listenters
 		this.ws.onopen = event => {
@@ -70,8 +77,8 @@ class WebSocketWrapper {
 			let payload = JSON.parse(event.data);
 
 			// Accept if prefixed by local or global ids
-			if (payload.id.startsWith(LOCAL_ID_PREFIX)) {
-				payload.id = payload.id.substring(LOCAL_ID_PREFIX.length)
+			if (payload.id.startsWith(sws_config.local_id_prefix)) {
+				payload.id = payload.id.substring(sws_config.local_id_prefix.length)
 			} else if (payload.id.startsWith(GLOBAL_ID_PREFIX)) {
 				payload.id = payload.id.substring(GLOBAL_ID_PREFIX.length)
 			} else {
@@ -96,6 +103,15 @@ class WebSocketWrapper {
 				}
 			}
 		};
+
+		// Keep (Not) Alive
+		setInterval(() => {
+			console.log("are we connected?")
+			if(this.ws?.readyState == 1) {
+				console.log("supposedly")
+				this.ws?.send("");
+			}
+		}, 30_000);
 	}
 
 	sendBooleanValue(id: string, value: boolean) {
@@ -109,7 +125,7 @@ class WebSocketWrapper {
 		}
 
 		// Prepend local id prefix
-		this.ws.send(`{"id":"${LOCAL_ID_PREFIX + id}","type":"boolean","value":${Boolean(value)}}`);
+		this.ws.send(`{"id":"${sws_config.local_id_prefix + id}","type":"boolean","value":${Boolean(value)}}`);
 
 		console.info(`local->remote boolean update ${id} = ${value}`);
 	}
@@ -125,7 +141,7 @@ class WebSocketWrapper {
 		}
 
 		// Prepend local id prefix
-		this.ws.send(`{"id":"${LOCAL_ID_PREFIX + id}","type":"number","value":${Number(value)}}`);
+		this.ws.send(`{"id":"${sws_config.local_id_prefix + id}","type":"number","value":${Number(value)}}`);
 
 		console.info(`local->remote number update ${id} = ${value}`);
 	}
@@ -141,7 +157,7 @@ class WebSocketWrapper {
 		}
 
 		// Prepend local id prefix
-		this.ws.send(`{"id":"${LOCAL_ID_PREFIX + id}","type":"string","value":"${String(value)}"}`);
+		this.ws.send(`{"id":"${sws_config.local_id_prefix + id}","type":"string","value":"${String(value)}"}`);
 
 		console.info(`local->remote string update ${id} = ${value}`);
 	}
