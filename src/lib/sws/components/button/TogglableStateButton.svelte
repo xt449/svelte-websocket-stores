@@ -20,9 +20,5 @@
 </script>
 
 <button class={clazz} on:click={toggle}>
-	{#if $state}
-		<slot name="true" />
-	{:else}
-		<slot name="false" />
-	{/if}
+	<slot />
 </button>
