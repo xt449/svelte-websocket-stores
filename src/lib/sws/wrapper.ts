@@ -104,12 +104,11 @@ class WebSocketWrapper {
 			}
 		};
 
-		// Keep (Not) Alive
+		// Keep (Not?) Alive
 		setInterval(() => {
-			console.log("are we connected?")
 			if(this.ws?.readyState == 1) {
-				console.log("supposedly")
-				this.ws?.send("");
+				console.debug("WebSocket still connected...")
+				this.ws?.send("!");
 			}
 		}, 30_000);
 	}
