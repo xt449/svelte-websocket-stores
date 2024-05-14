@@ -7,11 +7,13 @@ import path from "path"
 export default defineConfig({
 	plugins: [
 		svelte({
+			// Disable A11y missing attribute warnings
 			onwarn(warning, defaultHandler) {
 				if (warning.code === "a11y-missing-attribute") return;
 				defaultHandler!(warning);
 			},
 		}),
+		// Allow for local file deploymeny
 		viteSingleFile()
 	],
 	resolve: {
@@ -19,5 +21,9 @@ export default defineConfig({
 			$lib: path.resolve('./src/lib'),
 			$utils: path.resolve('./src/utils')
 		}
+	},
+	build: {
+		// Use rba() instead of #rrggbbaa
+		target: "chrome61",
 	}
 });
