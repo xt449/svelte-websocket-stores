@@ -5,7 +5,7 @@
 
 <div>
 	<DisconnectedDialog></DisconnectedDialog>
-	<BackdoorButton backdoorTrigger={() => location.reload()}></BackdoorButton>
+	<BackdoorButton></BackdoorButton>
 
 	<header>Header</header>
 	<main>Main</main>

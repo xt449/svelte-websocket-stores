@@ -1,7 +1,11 @@
 <script lang="ts">
-	export let backdoorTrigger: () => void;
+	import { strings } from "$lib/sws/store";
+    import PressButton from "./button/PressButton.svelte";
+
+	let passwordPopupValue = strings.get("password.popup.value");
 
 	let timeout: NodeJS.Timeout | undefined;
+	let passwordPopupOpen = false;
 
 	function press() {
 		// Clear any previous press timers
@@ -10,7 +14,7 @@
 		timeout = setTimeout(() => {
 			timeout = undefined;
 
-			backdoorTrigger();
+			passwordPopupOpen = true;
 		}, 3_000);
 	}
 
@@ -44,6 +48,19 @@
 
 <div class="backdoor-button"></div>
 
+{#if passwordPopupOpen}
+	<div class="backdrop">
+		<div class="popup">
+			<h3>Enter password to continue</h3>
+			<input type="password" bind:value={$passwordPopupValue}/>
+			<div class="buttons">
+				<button on:pointerdown={() => passwordPopupOpen = false}>Cancel</button>
+				<PressButton id="password.popup.confirm" class="primary">Confirm</PressButton>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <style>
 	.backdoor-button {
 		position: fixed;
@@ -59,5 +76,92 @@
 	/* This is required to listen to mouse events after it has moved */
 	:global(:root) {
 		touch-action: none;
+	}
+
+	.backdrop {
+		position: absolute;
+
+		width: 100%;
+		height: 100%;
+
+		background-color: rgba(0, 0, 0, 0.25);
+		color: #fff;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		z-index: 1;
+	}
+
+	.popup {
+		/* width: 30%; */
+		/* height: 30%; */
+
+		padding: 1rem;
+
+		display: flex;
+		flex-direction: column;
+		/* justify-content: space-between; */
+		row-gap: 2rem;
+
+		background-color: #444;
+		border-radius: 0.5rem;
+
+		box-shadow: 0 0 0.5rem 0 #000;
+	}
+
+	h3 {
+		margin: 0;
+	}
+
+	input {
+		border-width: 1px;
+		border-radius: 5px;
+
+		font-size: 1rem;
+		text-align: center;
+	}
+
+	.buttons {
+		width: 100%;
+
+		display: flex;
+		column-gap: 1px;
+	}
+
+	.buttons :global(*) {
+		width: 100%;
+
+		border: none;
+
+		background-color: #555;
+		color: #fff;
+		font-size: 1.25rem;
+		padding-block: 5%;
+	}
+
+	.buttons :global(:first-child) {
+		border-radius: 0.25rem 0 0 0.25rem;
+	}
+
+	.buttons :global(:last-child) {
+		border-radius: 0 0.25rem 0.25rem 0;
+	}
+
+	.buttons :global(.active) {
+		background-color: #666;
+	}
+
+	.buttons :global(:active) {
+		background-color: #666;
+	}
+
+	.buttons :global(.primary) {
+		background-color: #557;
+	}
+
+	.buttons :global(.primary.active) {
+		background-color: #667;
 	}
 </style>
