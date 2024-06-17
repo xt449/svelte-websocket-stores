@@ -149,19 +149,15 @@
 		border-radius: 0 0.25rem 0.25rem 0;
 	}
 
-	.buttons :global(.active) {
+	/* .buttons :global(.active) {
 		background-color: #666;
-	}
-
-	.buttons :global(:active) {
-		background-color: #666;
-	}
+	} */
 
 	.buttons :global(.primary) {
 		background-color: #557;
 	}
 
-	.buttons :global(.primary.active) {
+	/* .buttons :global(.primary.active) {
 		background-color: #667;
-	}
+	} */
 </style>
