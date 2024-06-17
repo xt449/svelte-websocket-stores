@@ -9,6 +9,7 @@
 
 	let clazz: string = "";
 	export { clazz as class };
+	export let style: string = "";
 
 	export let id: string;
 
@@ -23,6 +24,6 @@
 	}
 </script>
 
-<button class={clazz} class:active={$pressStore} on:pointerdown={press} on:pointerup={release} on:pointerout={release}>
+<button class={clazz} {style} class:active={$pressStore} on:pointerdown={press} on:pointerup={release} on:pointerout={release}>
 	<slot />
 </button>
