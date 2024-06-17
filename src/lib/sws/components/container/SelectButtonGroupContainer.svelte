@@ -2,7 +2,7 @@
 	@component
 	Websocket Stores:
 	- `${id}.count`: number - Number of elements
-	- `${id}.selected`: number - Selected element index (index starts at 0)
+	- `${id}.selected`: number - Selected element index (starts at 1; 0 for none)
 	- `${id}[${index}].visible`: boolean - Visibility for each element (index starts at 0)
 	- `${id}[${index}].label`: string - Label for each element (index starts at 0)
 -->
@@ -40,7 +40,7 @@
 <span class={clazz}>
 	{#each { length: $count } as _, index}
 		{#if $visibleArray[index]}
-			<button class={memberClass} class:selected={$selected == index} on:click={() => ($selected = index)}>{$labelArray[index]}</button>
+			<button class={memberClass} class:selected={$selected == index + 1} on:click={() => ($selected = index + 1)}>{$labelArray[index]}</button>
 		{/if}
 	{/each}
 </span>
