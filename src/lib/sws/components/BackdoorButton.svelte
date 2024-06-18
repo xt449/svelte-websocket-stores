@@ -14,6 +14,7 @@
 		timeout = setTimeout(() => {
 			timeout = undefined;
 
+			$passwordPopupValue = "";
 			passwordPopupOpen = true;
 		}, 3_000);
 	}
