@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { strings } from "$lib/sws/store";
-    import PressButton from "./button/PressButton.svelte";
+	import PressButton from "./button/PressButton.svelte";
 
 	let passwordPopupValue = strings.get("password.popup.value");
 
@@ -53,9 +53,9 @@
 	<div class="backdrop">
 		<div class="popup">
 			<h3>Enter password to continue</h3>
-			<input type="password" bind:value={$passwordPopupValue}/>
+			<input type="password" bind:value={$passwordPopupValue} />
 			<div class="buttons">
-				<button on:pointerdown={() => passwordPopupOpen = false}>Cancel</button>
+				<button on:pointerdown={() => (passwordPopupOpen = false)}>Cancel</button>
 				<PressButton id="password.popup.confirm" class="primary">Confirm</PressButton>
 			</div>
 		</div>

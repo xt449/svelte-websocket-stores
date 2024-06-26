@@ -26,9 +26,9 @@ class WebSocketWrapper {
 			await new Promise<void>((resolve) => {
 				var element = document.createElement("script");
 				element.src = "./sws.js";
-				
+
 				element.onload = () => resolve();
-		
+
 				document.head.appendChild(element);
 			});
 			this.start();
@@ -106,7 +106,7 @@ class WebSocketWrapper {
 
 		// Keep (Not?) Alive
 		setInterval(() => {
-			if(this.ws?.readyState == 1) {
+			if (this.ws?.readyState == 1) {
 				console.debug("WebSocket still connected...")
 				this.ws?.send("!");
 			}
