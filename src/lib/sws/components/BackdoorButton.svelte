@@ -92,19 +92,16 @@
 		align-items: center;
 		justify-content: center;
 
-		z-index: 1;
+		z-index: 100;
 	}
 
 	.popup {
-		/* width: 30%; */
-		/* height: 30%; */
-
-		padding: 1rem;
+		padding: 1rem 1.5rem;
 
 		display: flex;
 		flex-direction: column;
 		/* justify-content: space-between; */
-		row-gap: 2rem;
+		row-gap: 1.5rem;
 
 		background-color: #444;
 		border-radius: 0.5rem;
@@ -117,8 +114,10 @@
 	}
 
 	input {
-		border-width: 1px;
-		border-radius: 5px;
+		height: 1.5rem;
+
+		border: 0;
+		border-radius: 0.25rem;
 
 		font-size: 1rem;
 		text-align: center;
@@ -132,14 +131,16 @@
 	}
 
 	.buttons :global(*) {
+		height: 3rem;
 		width: 100%;
 
-		border: none;
+		padding: 0.5rem 1.5rem;
+
+		border: 0;
 
 		background-color: #555;
 		color: #fff;
 		font-size: 1.25rem;
-		padding-block: 5%;
 	}
 
 	.buttons :global(:first-child) {
@@ -150,15 +151,7 @@
 		border-radius: 0 0.25rem 0.25rem 0;
 	}
 
-	/* .buttons :global(.active) {
-		background-color: #666;
-	} */
-
 	.buttons :global(.primary) {
 		background-color: #557;
 	}
-
-	/* .buttons :global(.primary.active) {
-		background-color: #667;
-	} */
 </style>
