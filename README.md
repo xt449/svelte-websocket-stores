@@ -11,10 +11,10 @@ This was originally designed to allow touch panels to use [Svelte](https://www.n
 ## Usage
 
 ```ts
-import { initialize } from 'svelte-websocket-stores/websocket';
+import { initialize } from "svelte-websocket-stores/websocket";
 
 initialize({
-	server_address: "172.16.0.2",
+	server_address: "192.168.0.64",
 	local_id_prefix: "tp1."
 });
 ```
