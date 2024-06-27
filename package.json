@@ -2,6 +2,7 @@
 	"name": "svelte-websocket-stores",
 	"version": "0.0.1",
 	"license": "MIT",
+	"repository": "https://github.com/xt449/svelte-websocket-stores",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
