@@ -1,5 +1,5 @@
 import { get, readable, type Readable, type Subscriber } from "svelte/store";
-import { sendBooleanValue, sendNumberValue, sendStringValue } from "./wrapper";
+import { sendBooleanValue, sendNumberValue, sendStringValue } from "./websocket-wrapper.js";
 
 // Type Hinting
 
@@ -83,9 +83,3 @@ class StoreDictionary<V> {
 export const booleans = new StoreDictionary<boolean>(false, sendBooleanValue);
 export const numbers = new StoreDictionary<number>(0, sendNumberValue);
 export const strings = new StoreDictionary<string>("", sendStringValue);
-
-export function logStoreIds() {
-	console.log("Booleans:\n", booleans.keys.join("\n"));
-	console.log("Numbers:\n", numbers.keys.join("\n"));
-	console.log("Strings:\n", strings.keys.join("\n"));
-}

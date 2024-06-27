@@ -1,18 +1,16 @@
-import { get, readable, type Subscriber } from "svelte/store";
-import { booleans, logStoreIds, numbers, strings } from "./store";
-
-declare const sws_config: any;
+import { get, readable, type Readable, type Subscriber } from "svelte/store";
+import { booleans, numbers, strings } from "./store.js";
 
 const GLOBAL_ID_PREFIX = "global.";
 
 class WebSocketWrapper {
+	private config?: Configuration;
 	private ws?: WebSocket;
-	private debug = true;
 	private readonly booleanQueue: { [id: string]: boolean } = {};
 	private readonly numberQueue: { [id: string]: number } = {};
 	private readonly stringQueue: { [id: string]: string } = {};
 	private setConnectionState?: Subscriber<boolean>;
-	connectionState;
+	connectionState: Readable<boolean>;
 
 	constructor() {
 		this.connectionState = readable(false, (set) => {
@@ -21,18 +19,17 @@ class WebSocketWrapper {
 
 		// Force store setup
 		get(this.connectionState);
+	}
 
-		(async () => {
-			await new Promise<void>((resolve) => {
-				var element = document.createElement("script");
-				element.src = "./sws.js";
+	initialize(config: Configuration) {
+		// Only run once
+		if (this.config) {
+			return;
+		}
 
-				element.onload = () => resolve();
+		this.config = config;
 
-				document.head.appendChild(element);
-			});
-			this.start();
-		})();
+		this.start()
 	}
 
 	private start() {
@@ -43,17 +40,12 @@ class WebSocketWrapper {
 		console.info("WebSocket starting");
 
 		// Start networking
-		this.ws = new WebSocket(`ws://${sws_config.server_ip}:50080`);
+		this.ws = new WebSocket(`ws://${this.config!.server_address}:50080`);
 
 		// Init listenters
 		this.ws.onopen = event => {
 			console.info("WebSocket connected");
 			this.setConnectionState!(true);
-
-			if (this.debug) {
-				this.debug = false;
-				logStoreIds();
-			}
 
 			for (let [id, value] of Object.entries(this.booleanQueue)) {
 				this.sendBooleanValue(id, value);
@@ -77,8 +69,8 @@ class WebSocketWrapper {
 			let payload = JSON.parse(event.data);
 
 			// Accept if prefixed by local or global ids
-			if (payload.id.startsWith(sws_config.local_id_prefix)) {
-				payload.id = payload.id.substring(sws_config.local_id_prefix.length)
+			if (payload.id.startsWith(this.config!.local_id_prefix)) {
+				payload.id = payload.id.substring(this.config!.local_id_prefix.length)
 			} else if (payload.id.startsWith(GLOBAL_ID_PREFIX)) {
 				payload.id = payload.id.substring(GLOBAL_ID_PREFIX.length)
 			} else {
@@ -106,9 +98,9 @@ class WebSocketWrapper {
 
 		// Keep (Not?) Alive
 		setInterval(() => {
-			if (this.ws?.readyState == 1) {
+			if (this.ws?.readyState == WebSocket.OPEN) {
 				console.debug("WebSocket still connected...")
-				this.ws?.send("!");
+				this.ws?.send("{}");
 			}
 		}, 30_000);
 	}
@@ -124,7 +116,7 @@ class WebSocketWrapper {
 		}
 
 		// Prepend local id prefix
-		this.ws.send(`{"id":"${sws_config.local_id_prefix + id}","type":"boolean","value":${Boolean(value)}}`);
+		this.ws.send(`{"id":"${this.config!.local_id_prefix + id}","type":"boolean","value":${Boolean(value)}}`);
 
 		console.debug(`local->remote boolean update ${id} = ${value}`);
 	}
@@ -140,7 +132,7 @@ class WebSocketWrapper {
 		}
 
 		// Prepend local id prefix
-		this.ws.send(`{"id":"${sws_config.local_id_prefix + id}","type":"number","value":${Number(value)}}`);
+		this.ws.send(`{"id":"${this.config!.local_id_prefix + id}","type":"number","value":${Number(value)}}`);
 
 		console.debug(`local->remote number update ${id} = ${value}`);
 	}
@@ -156,7 +148,7 @@ class WebSocketWrapper {
 		}
 
 		// Prepend local id prefix
-		this.ws.send(`{"id":"${sws_config.local_id_prefix + id}","type":"string","value":"${String(value)}"}`);
+		this.ws.send(`{"id":"${this.config!.local_id_prefix + id}","type":"string","value":"${String(value)}"}`);
 
 		console.debug(`local->remote string update ${id} = ${value}`);
 	}
@@ -165,15 +157,15 @@ class WebSocketWrapper {
 const instance = new WebSocketWrapper();
 
 export const connected = instance.connectionState;
+export const initialize = instance.initialize;
 
-export function sendBooleanValue(id: string, value: boolean) {
-	instance.sendBooleanValue(id, value);
-}
+export const sendBooleanValue = instance.sendBooleanValue;
+export const sendNumberValue = instance.sendNumberValue;
+export const sendStringValue = instance.sendStringValue;
 
-export function sendNumberValue(id: string, value: number) {
-	instance.sendNumberValue(id, value);
-}
+// Configuration
 
-export function sendStringValue(id: string, value: string) {
-	instance.sendStringValue(id, value);
+export type Configuration = {
+	server_address: string,
+	local_id_prefix: string,
 }
