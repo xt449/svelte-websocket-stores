@@ -157,11 +157,26 @@ class WebSocketWrapper {
 const instance = new WebSocketWrapper();
 
 export const connected = instance.connectionState;
-export const initialize = instance.initialize;
 
-export const sendBooleanValue = instance.sendBooleanValue;
-export const sendNumberValue = instance.sendNumberValue;
-export const sendStringValue = instance.sendStringValue;
+// Singleton function export must be wrapped
+export function initialize(config: Configuration) {
+	instance.initialize(config);
+}
+
+// Singleton function export must be wrapped
+export function sendBooleanValue(id: string, value: boolean) {
+	instance.sendBooleanValue(id, value);
+}
+
+// Singleton function export must be wrapped
+export function sendNumberValue(id: string, value: number) {
+	instance.sendNumberValue(id, value);
+}
+
+// Singleton function export must be wrapped
+export function sendStringValue(id: string, value: string) {
+	instance.sendStringValue(id, value);
+}
 
 // Configuration
 
