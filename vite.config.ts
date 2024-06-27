@@ -1,29 +1,6 @@
-import { defineConfig } from "vite"
-import { svelte } from "@sveltejs/vite-plugin-svelte"
-import { viteSingleFile } from "vite-plugin-singlefile"
-import path from "path"
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [
-		svelte({
-			// Disable A11y missing attribute warnings
-			onwarn(warning, defaultHandler) {
-				if (warning.code === "a11y-missing-attribute") return;
-				defaultHandler!(warning);
-			},
-		}),
-		// Allow for local file deploymeny
-		viteSingleFile()
-	],
-	resolve: {
-		alias: {
-			$lib: path.resolve('./src/lib'),
-			$utils: path.resolve('./src/utils')
-		}
-	},
-	build: {
-		// Use rba() instead of #rrggbbaa
-		target: "chrome61",
-	}
+	plugins: [sveltekit()]
 });

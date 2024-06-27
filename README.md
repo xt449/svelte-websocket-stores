@@ -1,25 +1,20 @@
-# Svelte WebSocket
+# svelte-websocket-stores
 
-DevOps: https://dev.azure.com/backrooms/SvelteWebSocket  
-Git: https://backrooms@dev.azure.com/backrooms/SvelteWebSocket/_git/SvelteWebSocket  
+Synchronize primitive-typed Svelte stores across a simple WebSocket connection.
 
-### Overview
-Svelte WebSocket is a collection of TypeScript files for managing the WebSocket client and specialized Svelte stores for interfacing with the WebSocket. It also includes several premade Svelte components that can be used in a project or just as examples.  
-SWS also has a special component, `DisconnectedDialog.svelte`, which is a top-level element that shows when the WebSocket client loses connection with the WebSocket server.  
+[![npm version](https://img.shields.io/npm/v/svelte-websocket-stores.svg)](https://www.npmjs.com/package/svelte-websocket-stores) [![license](https://img.shields.io/npm/l/svelte-websocket-stores.svg)](LICENSE.md)
 
-### WebSocket Data Fomat
-The WebSocket server is on port 50080 by default.  
-All the data sent across the WebSocket by the server and clients is sent as a string in the following JSON format: `{"type":"<type>","id":"<id>","value":<value>}` where `<type>` is one of `boolean`, `number`, or `string`; `<id>` is the identifier of the state variable; and `<value>` is the value of the corresponding type formatted in the JSON specification.  
+### Purpose
 
-### Server Implementations
-There are two primary implementations of the SWS server in C# and Python.  
-The C# server is intended to be used on Crestron processors, and the Python server is intended to be used on Extron processors.  
+This was originally designed to allow touch panels to use [Svelte](https://www.npmjs.com/package/svelte) with any backend.
 
-### Client Configuration
-The SWS distribution contains a `sws.js` file which is used as the configuration.  
-The `sever_ip` property sets the host IP of the server that the client will connect to.  
-The `local_id_prefix` property sets the prefix that is prepended to all outgoing message IDs and is also used to check if incoming messages are to be read.  
+## Usage
 
-### Client Deployment
-The client is intended to be deployed to a Crestron touch panel that supports HTML 5.  
-To package the files in the distribution folder to upload to a Crestron touch panel, use the `ch5-cli` command from the ch5-utilities-cli NPM package.  
+```ts
+import { initialize } from 'svelte-websocket-stores/websocket';
+
+initialize({
+	server_address: "172.16.0.2",
+	local_id_prefix: "tp1."
+});
+```
