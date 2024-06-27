@@ -1,26 +1,47 @@
 {
-	"name": "svelte-websocket-client",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
+	"name": "svelte-websocket-stores",
+	"version": "0.0.1",
+	"license": "MIT",
 	"scripts": {
-		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"debug": "vite dev",
-		"predev": "npm run build",
-		"dev": "start ./dist/index.html",
-		"build": "vite build",
-		"archive": "ch5-cli archive -d dist -o archive"
+		"dev": "vite dev",
+		"build": "vite build && npm run package",
+		"preview": "vite preview",
+		"package": "svelte-kit sync && svelte-package && publint",
+		"prepublishOnly": "npm run package",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+	},
+	"exports": {
+		"./websocket": {
+			"types": "./dist/websocket.d.ts",
+			"svelte": "./dist/websocket.js"
+		},
+		"./store": {
+			"types": "./dist/store.d.ts",
+			"svelte": "./dist/store.js"
+		}
+	},
+	"files": [
+		"dist",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*"
+	],
+	"peerDependencies": {
+		"svelte": "^4.0.0"
 	},
 	"devDependencies": {
-		"@sveltejs/vite-plugin-svelte": "^3.0.2",
-		"@tsconfig/svelte": "^5.0.2",
-		"@types/node": "^20.11.25",
-		"path": "^0.12.7",
-		"svelte": "^4.2.11",
-		"svelte-check": "^3.6.4",
-		"tslib": "^2.6.2",
-		"typescript": "^5.2.2",
-		"vite": "^5.1.4",
-		"vite-plugin-singlefile": "^2.0.0"
-	}
+		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/package": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"publint": "^0.1.9",
+		"svelte": "^4.2.7",
+		"svelte-check": "^3.6.0",
+		"tslib": "^2.4.1",
+		"typescript": "^5.0.0",
+		"vite": "^5.0.11"
+	},
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"type": "module"
 }
