@@ -46,16 +46,6 @@ class WebSocketWrapper {
 		this.ws.onopen = event => {
 			console.info("WebSocket connected");
 			this.setConnectionState!(true);
-
-			for (let [id, value] of Object.entries(this.booleanQueue)) {
-				this.sendBooleanValue(id, value);
-			}
-			for (let [id, value] of Object.entries(this.numberQueue)) {
-				this.sendNumberValue(id, value);
-			}
-			for (let [id, value] of Object.entries(this.stringQueue)) {
-				this.sendStringValue(id, value);
-			}
 		}
 		this.ws.onerror = event => {
 			console.warn("WebSocket error:", event);
