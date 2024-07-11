@@ -34,21 +34,21 @@ class WebSocketWrapper {
 			return;
 		}
 
-		console.info("WebSocket starting");
+		console.info("[SWS] WebSocket starting...");
 
 		// Start networking
 		this.ws = new WebSocket(`ws://${this.config!.server_address}:50080`);
 
 		// Init listenters
 		this.ws.onopen = event => {
-			console.info("WebSocket connected");
+			console.info("[SWS] WebSocket opened");
 			this.setConnectionState!(true);
 		}
 		this.ws.onerror = event => {
-			console.warn("WebSocket error:", event);
+			console.warn("[SWS] WebSocket errored:", event);
 		};
 		this.ws.onclose = event => {
-			console.info("WebSocket closed: Reconnecting in 10 seconds...")
+			console.info("[SWS] WebSocket closed: Reconnecting in 10 seconds...")
 			this.setConnectionState!(false);
 			setTimeout(() => this.start(), 10_000);
 		};
@@ -66,17 +66,17 @@ class WebSocketWrapper {
 
 			switch (payload.type) {
 				case "boolean": {
-					console.debug(`local<-remote boolean update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-remote boolean update ${payload.id} = ${payload.value}`);
 					booleans.get(payload.id).setLocally(Boolean(payload.value));
 					break;
 				}
 				case "number": {
-					console.debug(`local<-remote number update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-remote number update ${payload.id} = ${payload.value}`);
 					numbers.get(payload.id).setLocally(Number(payload.value));
 					break;
 				}
 				case "string": {
-					console.debug(`local<-remote string update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-remote string update ${payload.id} = ${payload.value}`);
 					strings.get(payload.id).setLocally(String(payload.value));
 					break;
 				}
@@ -86,7 +86,6 @@ class WebSocketWrapper {
 		// Keep (Not?) Alive
 		setInterval(() => {
 			if (this.ws?.readyState == WebSocket.OPEN) {
-				console.debug("WebSocket still connected...")
 				this.ws?.send("{}");
 			}
 		}, 30_000);
@@ -101,7 +100,7 @@ class WebSocketWrapper {
 		// Prepend local id prefix
 		this.ws.send(`{"id":"${this.config!.local_id_prefix + id}","type":"boolean","value":${Boolean(value)}}`);
 
-		console.debug(`local->remote boolean update ${id} = ${value}`);
+		console.debug(`[SWS] local->remote boolean update ${id} = ${value}`);
 	}
 
 	sendNumberValue(id: string, value: number) {
@@ -113,7 +112,7 @@ class WebSocketWrapper {
 		// Prepend local id prefix
 		this.ws.send(`{"id":"${this.config!.local_id_prefix + id}","type":"number","value":${Number(value)}}`);
 
-		console.debug(`local->remote number update ${id} = ${value}`);
+		console.debug(`[SWS] local->remote number update ${id} = ${value}`);
 	}
 
 	sendStringValue(id: string, value: string) {
@@ -125,7 +124,7 @@ class WebSocketWrapper {
 		// Prepend local id prefix
 		this.ws.send(`{"id":"${this.config!.local_id_prefix + id}","type":"string","value":"${String(value)}"}`);
 
-		console.debug(`local->remote string update ${id} = ${value}`);
+		console.debug(`[SWS] local->remote string update ${id} = ${value}`);
 	}
 }
 
