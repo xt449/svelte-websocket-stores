@@ -50,7 +50,7 @@ class WebSocketWrapper {
 		this.ws.onclose = event => {
 			console.info("[SWS] WebSocket closed: Reconnecting in 10 seconds...")
 			this.setConnectionState!(false);
-			
+
 			setTimeout(() => this.start(), 10_000);
 		};
 		this.ws.onmessage = event => {
@@ -86,7 +86,7 @@ class WebSocketWrapper {
 
 		// Keep (Not?) Alive
 		setInterval(() => {
-			if (this.ws?.readyState == WebSocket.OPEN) {
+			if (this.ws?.readyState === WebSocket.OPEN) {
 				this.ws?.send("{}");
 			}
 		}, 30_000);
