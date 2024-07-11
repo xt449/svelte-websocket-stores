@@ -6,9 +6,6 @@ const GLOBAL_ID_PREFIX = "global.";
 class WebSocketWrapper {
 	private config?: Configuration;
 	private ws?: WebSocket;
-	private readonly booleanQueue: { [id: string]: boolean } = {};
-	private readonly numberQueue: { [id: string]: number } = {};
-	private readonly stringQueue: { [id: string]: string } = {};
 	private setConnectionState?: Subscriber<boolean>;
 	connectionState: Readable<boolean>;
 
@@ -96,12 +93,8 @@ class WebSocketWrapper {
 	}
 
 	sendBooleanValue(id: string, value: boolean) {
-		console.debug(`boolean update ${id} = ${value}`);
-
-		// Add to queue if WebSocket closed
+		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
-			console.warn("WebSocket not connected. Adding to boolean queue");
-			this.booleanQueue[id] = value;
 			return;
 		}
 
@@ -112,12 +105,8 @@ class WebSocketWrapper {
 	}
 
 	sendNumberValue(id: string, value: number) {
-		console.debug(`number update ${id} = ${value}`);
-
-		// Add to queue if WebSocket closed
+		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
-			console.warn("WebSocket not connected. Adding to number queue");
-			this.numberQueue[id] = value;
 			return;
 		}
 
@@ -128,12 +117,8 @@ class WebSocketWrapper {
 	}
 
 	sendStringValue(id: string, value: string) {
-		console.debug(`string update ${id} = ${value}`);
-
-		// Add to queue if WebSocket closed
+		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
-			console.warn("WebSocket not connected. Adding to string queue");
-			this.stringQueue[id] = value;
 			return;
 		}
 
