@@ -16,7 +16,7 @@ import { initialize } from "svelte-websocket-stores/websocket";
 
 initialize({
 	server_address: "192.168.0.64",
-	local_scope: "tp1."
+	local_scope: "tp1"
 });
 ```
 
