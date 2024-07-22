@@ -1,7 +1,7 @@
 import { get, readable, type Readable, type Subscriber } from "svelte/store";
 import { booleans, numbers, strings } from "./store.js";
 
-const GLOBAL_ID_PREFIX = "global.";
+const GLOBAL_SCOPE = "global";
 
 class WebSocketWrapper {
 	private config?: Configuration;
@@ -21,6 +21,12 @@ class WebSocketWrapper {
 	initialize(config: Configuration) {
 		// Only run once
 		if (this.config) {
+			return;
+		}
+
+		// Check for valid con
+		if(config.local_scope === undefined || config.server_address === undefined) {
+			console.error("[SWS] Unable to initialize WebSocketWrapper: Invalid configuration!");
 			return;
 		}
 
@@ -56,28 +62,27 @@ class WebSocketWrapper {
 		this.ws.onmessage = event => {
 			let payload = JSON.parse(event.data);
 
-			// Accept if prefixed by local or global ids
-			if (payload.id.startsWith(this.config!.local_id_prefix)) {
-				payload.id = payload.id.substring(this.config!.local_id_prefix.length)
-			} else if (payload.id.startsWith(GLOBAL_ID_PREFIX)) {
-				payload.id = payload.id.substring(GLOBAL_ID_PREFIX.length)
-			} else {
+			// Abort if scope is not global or does not match local
+			if (payload.scope !== GLOBAL_SCOPE && payload.scope !== this.config!.local_scope) {
 				return;
 			}
 
 			switch (payload.type) {
 				case "boolean": {
-					console.debug(`[SWS] local<-remote boolean update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${payload.scope}' boolean update ${payload.id} = ${payload.value}`);
+					// Set locally
 					booleans.get(payload.id).setLocally(Boolean(payload.value));
 					break;
 				}
 				case "number": {
-					console.debug(`[SWS] local<-remote number update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${payload.scope}' number update ${payload.id} = ${payload.value}`);
+					// Set locally
 					numbers.get(payload.id).setLocally(Number(payload.value));
 					break;
 				}
 				case "string": {
-					console.debug(`[SWS] local<-remote string update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${payload.scope}' string update ${payload.id} = ${payload.value}`);
+					// Set locally
 					strings.get(payload.id).setLocally(String(payload.value));
 					break;
 				}
@@ -98,10 +103,10 @@ class WebSocketWrapper {
 			return;
 		}
 
-		console.debug(`[SWS] local->remote boolean update ${id} = ${value}`);
+		console.debug(`[SWS] '${this.config!.local_scope}'->remote boolean update ${id} = ${value}`);
 
-		// Prepend local id prefix
-		this.ws.send(`{"id":"${this.config!.local_id_prefix + id}","type":"boolean","value":${Boolean(value)}}`);
+		// Send over WebSocket
+		this.ws.send(`{"scope":"${this.config!.local_scope}","id":"${id}","type":"boolean","value":${Boolean(value)}}`);
 	}
 
 	sendNumberValue(id: string, value: number) {
@@ -110,10 +115,10 @@ class WebSocketWrapper {
 			return;
 		}
 
-		console.debug(`[SWS] local->remote number update ${id} = ${value}`);
+		console.debug(`[SWS] '${this.config!.local_scope}'->remote number update ${id} = ${value}`);
 
-		// Prepend local id prefix
-		this.ws.send(`{"id":"${this.config!.local_id_prefix + id}","type":"number","value":${Number(value)}}`);
+		// Send over WebSocket
+		this.ws.send(`{"scope":"${this.config!.local_scope}","id":"${id}","type":"number","value":${Number(value)}}`);
 	}
 
 	sendStringValue(id: string, value: string) {
@@ -122,10 +127,10 @@ class WebSocketWrapper {
 			return;
 		}
 
-		console.debug(`[SWS] local->remote string update ${id} = ${value}`);
+		console.debug(`[SWS] '${this.config!.local_scope}'->remote string update ${id} = ${value}`);
 
-		// Prepend local id prefix
-		this.ws.send(`{"id":"${this.config!.local_id_prefix + id}","type":"string","value":"${String(value)}"}`);
+		// Send over WebSocket
+		this.ws.send(`{"scope":"${this.config!.local_scope}","id":"${id}","type":"string","value":"${String(value)}"}`);
 	}
 }
 
@@ -157,5 +162,5 @@ export function sendStringValue(id: string, value: string) {
 
 export type Configuration = {
 	server_address: string,
-	local_id_prefix: string,
+	local_scope: string,
 }
