@@ -25,7 +25,7 @@ class WebSocketWrapper {
 		}
 
 		// Check for valid con
-		if(config.local_scope === undefined || config.server_address === undefined) {
+		if (config.local_scope === undefined || config.server_address === undefined) {
 			console.error("[SWS] Unable to initialize WebSocketWrapper: Invalid configuration!");
 			return;
 		}
