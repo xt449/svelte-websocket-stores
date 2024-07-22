@@ -95,7 +95,7 @@ The field `type` determines how the `value` field is interpreted as well as whic
 2. The object's `type` field is switched on with the cases `"boolean"`, `"number"`, and `"string"`. If there is no match, the message is discarded.
 3. The variable is indexed by the object's `scope` and `id` fields from the dictionary holding the respectively typed variables.
 4. The variable's value is assigned to the object's `value` field, cast to its respective type.
-4. Send all clients a message for the new value.
-5. Handle any events.
+5. Send all clients a message for the new value.
+6. Handle any events.
 
 [^1]: This is the behavior expected by this WebSocket client
