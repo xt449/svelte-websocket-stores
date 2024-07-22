@@ -1,5 +1,5 @@
-import { get, readable, type Readable, type Subscriber } from "svelte/store";
-import { booleans, numbers, strings } from "./store.js";
+import { get as initializeStore, readable, type Readable, type Subscriber } from "svelte/store";
+import { get } from "./store.js";
 
 const GLOBAL_SCOPE = "global";
 
@@ -15,7 +15,7 @@ class WebSocketWrapper {
 		});
 
 		// Force store setup
-		get(this.connectionState);
+		initializeStore(this.connectionState);
 	}
 
 	initialize(config: Configuration) {
@@ -67,26 +67,9 @@ class WebSocketWrapper {
 				return;
 			}
 
-			switch (payload.type) {
-				case "boolean": {
-					console.debug(`[SWS] local<-'${payload.scope}' boolean update ${payload.id} = ${payload.value}`);
-					// Set locally
-					booleans.get(payload.id).setLocally(Boolean(payload.value));
-					break;
-				}
-				case "number": {
-					console.debug(`[SWS] local<-'${payload.scope}' number update ${payload.id} = ${payload.value}`);
-					// Set locally
-					numbers.get(payload.id).setLocally(Number(payload.value));
-					break;
-				}
-				case "string": {
-					console.debug(`[SWS] local<-'${payload.scope}' string update ${payload.id} = ${payload.value}`);
-					// Set locally
-					strings.get(payload.id).setLocally(String(payload.value));
-					break;
-				}
-			}
+			console.debug(`[SWS] local<-'${payload.scope}' update ${payload.id} = ${payload.value}`);
+			// Set locally
+			get(payload.id).setLocally(payload.value);
 		};
 
 		// Keep (Not?) Alive
@@ -97,40 +80,16 @@ class WebSocketWrapper {
 		}, 30_000);
 	}
 
-	sendBooleanValue(id: string, value: boolean) {
+	sendStoreValueUpdate(id: string, value: string) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
 		}
 
-		console.debug(`[SWS] '${this.config!.local_scope}'->remote boolean update ${id} = ${value}`);
+		console.debug(`[SWS] '${this.config!.local_scope}'->remote update ${id} = ${value}`);
 
-		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config!.local_scope}","id":"${id}","type":"boolean","value":${Boolean(value)}}`);
-	}
-
-	sendNumberValue(id: string, value: number) {
-		// Abort if WebSocket undefined or not opened
-		if (this.ws?.readyState !== WebSocket.OPEN) {
-			return;
-		}
-
-		console.debug(`[SWS] '${this.config!.local_scope}'->remote number update ${id} = ${value}`);
-
-		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config!.local_scope}","id":"${id}","type":"number","value":${Number(value)}}`);
-	}
-
-	sendStringValue(id: string, value: string) {
-		// Abort if WebSocket undefined or not opened
-		if (this.ws?.readyState !== WebSocket.OPEN) {
-			return;
-		}
-
-		console.debug(`[SWS] '${this.config!.local_scope}'->remote string update ${id} = ${value}`);
-
-		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config!.local_scope}","id":"${id}","type":"string","value":"${String(value)}"}`);
+		// Prepend local id prefix
+		this.ws.send(`{"scope":"${this.config!.local_scope}","id":"${id}","type":"${typeof(value)}","value":${JSON.stringify(value)}`);
 	}
 }
 
@@ -144,18 +103,8 @@ export function initialize(config: Configuration) {
 }
 
 // Singleton function export must be wrapped
-export function sendBooleanValue(id: string, value: boolean) {
-	instance.sendBooleanValue(id, value);
-}
-
-// Singleton function export must be wrapped
-export function sendNumberValue(id: string, value: number) {
-	instance.sendNumberValue(id, value);
-}
-
-// Singleton function export must be wrapped
-export function sendStringValue(id: string, value: string) {
-	instance.sendStringValue(id, value);
+export function sendStoreValueUpdate(id: string, value: any) {
+	instance.sendStoreValueUpdate(id, value);
 }
 
 // Configuration
