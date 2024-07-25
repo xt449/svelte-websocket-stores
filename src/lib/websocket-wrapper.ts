@@ -1,5 +1,5 @@
-import { get as initializeStore, readable, type Readable, type Subscriber } from "svelte/store";
-import { get } from "./store.js";
+import { get, readable, type Readable, type Subscriber } from "svelte/store";
+import { webSocketStore } from "./store.js";
 
 const GLOBAL_SCOPE = "global";
 
@@ -15,7 +15,7 @@ class WebSocketWrapper {
 		});
 
 		// Force store setup
-		initializeStore(this.connectionState);
+		get(this.connectionState);
 	}
 
 	initialize(config: Configuration) {
@@ -69,7 +69,7 @@ class WebSocketWrapper {
 
 			console.debug(`[SWS] local<-'${payload.scope}' update ${payload.id} = ${payload.value}`);
 			// Set locally
-			get(payload.id).setLocally(payload.value);
+			webSocketStore(payload.id).setLocally(payload.value);
 		};
 
 		// Keep (Not?) Alive

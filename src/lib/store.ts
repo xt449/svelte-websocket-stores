@@ -20,7 +20,7 @@ const dictionary: { [key: string]: WebSocketStore } = {};
  * @param defaultValue Initial value of store; ignored if store already exists with given id
  * @returns New or existing store if one already exists with given id;
  */
-export function get(id: string, defaultValue?: any): WebSocketStore {
+export function webSocketStore(id: string, defaultValue?: any): WebSocketStore {
 	// Check if store already exists with given id
 	let webSocketStore = dictionary[id];
 	if (webSocketStore !== undefined) {
