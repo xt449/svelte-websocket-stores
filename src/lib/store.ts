@@ -1,15 +1,17 @@
-import { type Readable, writable } from "svelte/store";
+import { writable, type Readable} from "svelte/store";
 import { sendStoreValueUpdate } from "./websocket-wrapper.js";
 
-// Type Hinting
-
+/**
+ * Svelte store that updates accross websocket interface with extra `setLocally` method for client-only reactivity when needed
+ */
 export interface WebSocketStore extends Readable<any> {
 	set(this: void, value: any): void;
 	setLocally(this: void, value: any): void;
 }
 
-// Logic
-
+/**
+ * Global WebSocketStore dictionary
+ */
 const dictionary: { [key: string]: WebSocketStore } = {};
 
 /**
