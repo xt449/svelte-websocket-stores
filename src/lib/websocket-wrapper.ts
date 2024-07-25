@@ -85,13 +85,6 @@ class WebSocketWrapper {
 				}
 			}
 		};
-
-		// Keep (Not?) Alive
-		setInterval(() => {
-			if (this.ws?.readyState === WebSocket.OPEN) {
-				this.ws?.send("{}");
-			}
-		}, 30_000);
 	}
 
 	sendBooleanValue(id: string, value: boolean) {
