@@ -1,4 +1,4 @@
-import { writable, type Readable} from "svelte/store";
+import { writable, type Readable } from "svelte/store";
 import { sendStoreValueUpdate } from "./websocket-wrapper.js";
 
 /**
