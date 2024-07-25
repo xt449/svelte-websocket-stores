@@ -32,7 +32,7 @@ class WebSocketWrapper {
 
 		this.config = config;
 
-		this.start()
+		this.start();
 	}
 
 	private start() {
