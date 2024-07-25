@@ -1,4 +1,4 @@
-import { get, readable, type Readable, type Subscriber } from "svelte/store";
+import { writable, type Readable, type Writable } from "svelte/store";
 import { booleans, numbers, strings } from "./store.js";
 
 const GLOBAL_SCOPE = "global";
@@ -6,16 +6,13 @@ const GLOBAL_SCOPE = "global";
 class WebSocketWrapper {
 	private config?: Configuration;
 	private ws?: WebSocket;
-	private setConnectionState?: Subscriber<boolean>;
-	connectionState: Readable<boolean>;
+	private connectionState: Writable<boolean>;
+	connected: Readable<boolean>;
 
 	constructor() {
-		this.connectionState = readable(false, (set) => {
-			this.setConnectionState = set;
-		});
-
-		// Force store setup
-		get(this.connectionState);
+		this.connectionState = writable(false);
+		// Create our own Readable store
+		this.connected = { subscribe: this.connectionState.subscribe };
 	}
 
 	initialize(config: Configuration) {
@@ -48,14 +45,14 @@ class WebSocketWrapper {
 		// Init listenters
 		this.ws.onopen = event => {
 			console.info("[SWS] WebSocket opened");
-			this.setConnectionState!(true);
+			this.connectionState.set(true);
 		}
 		this.ws.onerror = event => {
 			console.warn("[SWS] WebSocket errored:", event);
 		};
 		this.ws.onclose = event => {
 			console.info("[SWS] WebSocket closed: Reconnecting in 10 seconds...")
-			this.setConnectionState!(false);
+			this.connectionState.set(false);
 
 			setTimeout(() => this.start(), 10_000);
 		};
@@ -136,7 +133,7 @@ class WebSocketWrapper {
 
 const instance = new WebSocketWrapper();
 
-export const connected = instance.connectionState;
+export const connected = instance.connected;
 
 // Singleton function export must be wrapped
 export function initialize(config: Configuration) {
