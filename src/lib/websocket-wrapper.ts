@@ -68,13 +68,6 @@ class WebSocketWrapper {
 			// Set locally
 			webSocketStore(payload.id).setLocally(payload.value);
 		};
-
-		// Keep (Not?) Alive
-		setInterval(() => {
-			if (this.ws?.readyState === WebSocket.OPEN) {
-				this.ws?.send("{}");
-			}
-		}, 30_000);
 	}
 
 	sendStoreValueUpdate(id: string, value: string) {
