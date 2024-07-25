@@ -10,7 +10,6 @@
 	"scripts": {
 		"build": "npm run check && npm run package",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"test": "vitest",
 		"package": "svelte-package && publint"
 	},
 	"exports": {
