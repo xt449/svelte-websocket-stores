@@ -1,4 +1,4 @@
-import { get, readable, type Readable, type Subscriber } from "svelte/store";
+import { get, readable, writable, type Readable, type Subscriber } from "svelte/store";
 import { sendBooleanValue, sendNumberValue, sendStringValue } from "./websocket-wrapper.js";
 
 // Type Hinting
@@ -16,37 +16,36 @@ export interface WebSocketStore<V> extends Readable<V> {
  * Pseudo-constructor for {@link WebSocketStore}
  */
 function webSocketStore<V>(defaultValue: V, updateFunction: Subscriber<V>): WebSocketStore<V> {
-	let setFunction: Subscriber<V>;
-
 	/**
-	 * Backing readable store
+	 * Backing store
 	 */
-	let store = readable(defaultValue, (set: Subscriber<V>) => {
-		setFunction = set;
-	});
-
-	// This calls the start function of the store just created.
-	get(store);
+	let store = writable(defaultValue);
 
 	/**
-	 * Updates WebSocket
+	 * WebSocket implementation of set function
 	 */
 	function set(value: V): void {
 		// Set locally first for better reactivity
-		setFunction(value);
+		store.set(value);
 
 		// Send to websocket
 		updateFunction(value);
 	}
 
-	/**
-	 * Does not update WebSocket
-	 */
-	function setLocally(value: V): void {
-		setFunction(value);
-	}
-
-	return { ...store, set, setLocally };
+	return {
+		/**
+		 * Default subscribe function
+		 */
+		subscribe: store.subscribe,
+		/**
+		 * WebSocketStore implementation of set function
+		 */
+		set,
+		/**
+		 * Default set function
+		 */
+		setLocally: store.set
+	};
 }
 
 /**
