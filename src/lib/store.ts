@@ -41,6 +41,7 @@ export function webSocketStore(id: string, defaultValue?: any): WebSocketStore {
 	function set(value: any): void {
 		// Set locally first for better reactivity
 		store.set(value);
+		store.set(value);
 
 		// Send update to websocket
 		sendStoreValueUpdate(id, value);
