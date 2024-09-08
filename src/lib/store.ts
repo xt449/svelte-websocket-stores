@@ -5,7 +5,15 @@ import { sendStoreValueUpdate } from "./websocket-wrapper.js";
  * Svelte store that updates accross websocket interface with extra `setLocally` method for client-only reactivity when needed
  */
 export interface WebSocketStore extends Readable<any> {
+	/**
+	 * Set value, inform subscribers, and send update over WebSocket.
+	 * @param value to set
+	 */
 	set(this: void, value: any): void;
+	/**
+	 * Set value and inform subscribers.
+	 * @param value to set
+	 */
 	setLocally(this: void, value: any): void;
 }
 
@@ -16,9 +24,9 @@ const dictionary: { [key: string]: WebSocketStore } = {};
 
 /**
  * Pseudo-constructor for {@link WebSocketStore}
- * @param id Identifier
+ * @param id Store identifier
  * @param defaultValue Initial value of store; ignored if store already exists with given id
- * @returns New or existing store if one already exists with given id;
+ * @returns New store or existing store if one already exists with given id;
  */
 export function webSocketStore(id: string, defaultValue?: any): WebSocketStore {
 	// Check if store already exists with given id
@@ -41,24 +49,17 @@ export function webSocketStore(id: string, defaultValue?: any): WebSocketStore {
 	function set(value: any): void {
 		// Set locally first for better reactivity
 		store.set(value);
-		store.set(value);
 
 		// Send update to websocket
 		sendStoreValueUpdate(id, value);
 	}
 
 	return dictionary[id] = {
-		/**
-		 * Default subscribe function
-		 */
+		// Default subscribe function
 		subscribe: store.subscribe,
-		/**
-		 * WebSocketStore implementation of set function
-		 */
+		// WebSocketStore implementation of set function
 		set,
-		/**
-		 * Default set function
-		 */
+		// Default set function
 		setLocally: store.set
 	};
 }
