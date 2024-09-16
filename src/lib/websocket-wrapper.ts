@@ -3,6 +3,12 @@ import { webSocketStore } from "./store.js";
 
 const GLOBAL_SCOPE = "global";
 
+type Message = {
+	id: string;
+	scope: string | string[];
+	value: any;
+};
+
 class WebSocketWrapper {
 	private config?: Configuration;
 	private ws?: WebSocket;
@@ -57,17 +63,27 @@ class WebSocketWrapper {
 			setTimeout(() => this.start(), 10_000);
 		};
 		this.ws.onmessage = event => {
-			let payload = JSON.parse(event.data);
+			let payload: Message = JSON.parse(event.data);
 
-			// Abort if scope is not global or does not match local
-			if (payload.scope !== GLOBAL_SCOPE && payload.scope !== this.config!.local_scope) {
-				return;
+			// Abort if scope does not contain or match the global or local scope
+			if (Array.isArray(payload.scope)) {
+				if (!payload.scope.includes(GLOBAL_SCOPE) && !payload.scope.includes(this.config!.local_scope)) {
+					return;
+				}
+			} else {
+				if (payload.scope !== GLOBAL_SCOPE && payload.scope !== this.config!.local_scope) {
+					return;
+				}
 			}
 
 			console.debug(`[SWS] local<-'${payload.scope}' update ${payload.id} = ${payload.value}`);
 			// Set locally
 			webSocketStore(payload.id).setLocally(payload.value);
 		};
+	}
+
+	private matchesScope(scope: string | string[]): boolean {
+		return (Array.isArray(scope) && !scope.includes(GLOBAL_SCOPE) && !scope.includes(this.config!.local_scope)) || (scope !== GLOBAL_SCOPE && scope !== this.config!.local_scope);
 	}
 
 	sendStoreValueUpdate(id: string, value: string) {
