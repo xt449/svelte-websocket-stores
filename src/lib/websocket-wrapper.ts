@@ -94,7 +94,6 @@ class WebSocketWrapper {
 
 		console.debug(`[SWS] '${this.config!.local_scope}'->remote update ${id} = ${value}`);
 
-		// Prepend local id prefix
 		this.ws.send(`{"scope":"${this.config!.local_scope}","id":"${id}","type":"${typeof value}","value":${JSON.stringify(value)}`);
 	}
 }
