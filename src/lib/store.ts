@@ -1,4 +1,4 @@
-import { get, readable, writable, type Readable, type Subscriber } from "svelte/store";
+import { writable, type Readable, type Subscriber } from "svelte/store";
 import { sendBooleanValue, sendNumberValue, sendStringValue } from "./websocket-wrapper.js";
 
 // Type Hinting
