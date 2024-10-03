@@ -27,12 +27,15 @@ class WebSocketWrapper {
 			return;
 		}
 
+		// Set config value
 		this.config = config;
 
+		// Start connection
 		this.start();
 	}
 
 	private start() {
+		// Abort if WebSocket already opened
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			return;
 		}
@@ -54,6 +57,7 @@ class WebSocketWrapper {
 			console.info("[SWS] WebSocket closed: Reconnecting in 10 seconds...")
 			this.connectionState.set(false);
 
+			// Execute after 10 seconds
 			setTimeout(() => this.start(), 10_000);
 		};
 		this.ws.onmessage = event => {
