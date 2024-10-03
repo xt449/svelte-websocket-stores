@@ -1,11 +1,8 @@
 import { writable, type Readable, type Writable } from "svelte/store";
 import { webSocketStore } from "./store.js";
 
-const GLOBAL_SCOPE = "global";
-
 type Message = {
 	id: string;
-	scope: string | string[];
 	value: any;
 };
 
@@ -28,7 +25,7 @@ class WebSocketWrapper {
 		}
 
 		// Check for valid config
-		if (config.local_scope === undefined || config.server_address === undefined) {
+		if (config.server_address === undefined) {
 			console.error("[SWS] Unable to initialize WebSocketWrapper: Invalid configuration!");
 			return;
 		}
@@ -65,25 +62,10 @@ class WebSocketWrapper {
 		this.ws.onmessage = event => {
 			let payload: Message = JSON.parse(event.data);
 
-			// Abort if scope does not contain or match the global or local scope
-			if (Array.isArray(payload.scope)) {
-				if (!payload.scope.includes(GLOBAL_SCOPE) && !payload.scope.includes(this.config!.local_scope)) {
-					return;
-				}
-			} else {
-				if (payload.scope !== GLOBAL_SCOPE && payload.scope !== this.config!.local_scope) {
-					return;
-				}
-			}
-
-			console.debug(`[SWS] local<-'${payload.scope}' update ${payload.id} = ${payload.value}`);
+			console.debug(`[SWS] local<-remote update ${payload.id} = ${payload.value}`);
 			// Set locally
 			webSocketStore(payload.id).setLocally(payload.value);
 		};
-	}
-
-	private matchesScope(scope: string | string[]): boolean {
-		return (Array.isArray(scope) && !scope.includes(GLOBAL_SCOPE) && !scope.includes(this.config!.local_scope)) || (scope !== GLOBAL_SCOPE && scope !== this.config!.local_scope);
 	}
 
 	sendStoreValueUpdate(id: string, value: string) {
@@ -92,9 +74,9 @@ class WebSocketWrapper {
 			return;
 		}
 
-		console.debug(`[SWS] '${this.config!.local_scope}'->remote update ${id} = ${value}`);
+		console.debug(`[SWS] local->remote update ${id} = ${value}`);
 
-		this.ws.send(`{"scope":"${this.config!.local_scope}","id":"${id}","type":"${typeof value}","value":${JSON.stringify(value)}`);
+		this.ws.send(`{"id":"${id}","type":"${typeof value}","value":${JSON.stringify(value)}`);
 	}
 }
 
@@ -116,5 +98,4 @@ export function sendStoreValueUpdate(id: string, value: any) {
 
 export type Configuration = {
 	server_address: string,
-	local_scope: string,
 }
