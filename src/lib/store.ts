@@ -24,13 +24,13 @@ const dictionary: { [key: string]: WebSocketStore } = {};
 
 /**
  * Pseudo-constructor for {@link WebSocketStore}
- * @param id Store identifier
- * @param defaultValue Initial value of store; ignored if store already exists with given id
- * @returns New store or existing store if one already exists with given id;
+ * @param path Store path
+ * @param defaultValue Initial value of store; ignored if store already exists with given path
+ * @returns New store or existing store if one already exists with given path;
  */
-export function webSocketStore(id: string, defaultValue?: any): WebSocketStore {
-	// Check if store already exists with given id
-	let webSocketStore = dictionary[id];
+export function webSocketStore(path: string, defaultValue?: any): WebSocketStore {
+	// Check if store already exists with given path
+	let webSocketStore = dictionary[path];
 	if (webSocketStore !== undefined) {
 		// Return existing store
 		return webSocketStore;
@@ -51,10 +51,10 @@ export function webSocketStore(id: string, defaultValue?: any): WebSocketStore {
 		store.set(value);
 
 		// Send update to websocket
-		sendStoreValueUpdate(id, value);
+		sendStoreValueUpdate(path, value);
 	}
 
-	return dictionary[id] = {
+	return dictionary[path] = {
 		// Default subscribe function
 		subscribe: store.subscribe,
 		// WebSocketStore implementation of set function

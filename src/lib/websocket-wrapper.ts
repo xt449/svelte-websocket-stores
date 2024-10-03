@@ -2,7 +2,7 @@ import { writable, type Readable, type Writable } from "svelte/store";
 import { webSocketStore } from "./store.js";
 
 type Message = {
-	id: string;
+	path: string;
 	value: any;
 };
 
@@ -62,21 +62,21 @@ class WebSocketWrapper {
 		this.ws.onmessage = event => {
 			let payload: Message = JSON.parse(event.data);
 
-			console.debug(`[SWS] local<-remote update ${payload.id} = ${payload.value}`);
+			console.debug(`[SWS] local<-remote update ${payload.path} = ${payload.value}`);
 			// Set locally
-			webSocketStore(payload.id).setLocally(payload.value);
+			webSocketStore(payload.path).setLocally(payload.value);
 		};
 	}
 
-	sendStoreValueUpdate(id: string, value: string) {
+	sendStoreValueUpdate(path: string, value: string) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
 		}
 
-		console.debug(`[SWS] local->remote update ${id} = ${value}`);
+		console.debug(`[SWS] local->remote update ${path} = ${value}`);
 
-		this.ws.send(`{"id":"${id}","type":"${typeof value}","value":${JSON.stringify(value)}`);
+		this.ws.send(`{"path":"${path}","type":"${typeof value}","value":${JSON.stringify(value)}`);
 	}
 }
 
@@ -90,8 +90,8 @@ export function initialize(config: Configuration) {
 }
 
 // Singleton function export must be wrapped
-export function sendStoreValueUpdate(id: string, value: any) {
-	instance.sendStoreValueUpdate(id, value);
+export function sendStoreValueUpdate(path: string, value: any) {
+	instance.sendStoreValueUpdate(path, value);
 }
 
 // Configuration
