@@ -1,5 +1,4 @@
 import { writable, type Readable, type Subscriber } from "svelte/store";
-import { sendBooleanValue, sendNumberValue, sendStringValue } from "./websocket-wrapper.js";
 
 // Type Hinting
 
@@ -51,7 +50,7 @@ function webSocketStore<V>(defaultValue: V, updateFunction: Subscriber<V>): WebS
 /**
  * Dictionary-like class for binding to Svelte stores by IDs
  */
-class StoreDictionary<V> {
+export class StoreDictionary<V> {
 	private backing: { [key: string]: WebSocketStore<V> } = {}
 	private defaultValue: V;
 	private updateFunction: SubscriberWithID<V>;
@@ -76,9 +75,3 @@ class StoreDictionary<V> {
 		return Object.keys(this.backing);
 	}
 }
-
-// Export instances
-
-export const booleans = new StoreDictionary<boolean>(false, sendBooleanValue);
-export const numbers = new StoreDictionary<number>(0, sendNumberValue);
-export const strings = new StoreDictionary<string>("", sendStringValue);
