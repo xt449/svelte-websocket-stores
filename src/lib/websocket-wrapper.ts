@@ -4,15 +4,25 @@ import { StoreDictionary } from "./store.js";
 const GLOBAL_SCOPE = "global";
 
 // Configuration
-
 export interface Configuration {
 	server_address: string,
 	server_port: number,
 	local_scope: string,
 }
 
-// Wrapper
+// Type aliases
+type MessageType = "boolean" | "number" | "string" | "object";
+type MessageValue = boolean | number | string | object;
 
+// WebSocket message object structure
+interface Message {
+	scope: string;
+	id: string;
+	type: MessageType;
+	value: MessageValue;
+};
+
+// Wrapper
 export class WebSocketWrapper {
 	private config: Configuration;
 
@@ -31,7 +41,7 @@ export class WebSocketWrapper {
 
 	constructor(config: Configuration) {
 		// Check for valid config
-		if (config.local_scope === undefined || config.server_address === undefined || config.server_port === undefined ) {
+		if (config.local_scope === undefined || config.server_address === undefined || config.server_port === undefined) {
 			console.error("[SWS] Unable to initialize WebSocketWrapper: Invalid configuration!");
 			throw new Error("[SWS] Unable to initialize WebSocketWrapper: Invalid configuration!");
 		}
@@ -77,7 +87,7 @@ export class WebSocketWrapper {
 			setTimeout(() => this.start(), 10_000);
 		};
 		this.ws.onmessage = event => {
-			let payload = JSON.parse(event.data);
+			let payload: Message = JSON.parse(event.data);
 
 			// Abort if scope is not global or does not match local
 			if (payload.scope !== GLOBAL_SCOPE && payload.scope !== this.config.local_scope) {
@@ -122,7 +132,7 @@ export class WebSocketWrapper {
 		console.debug(`[SWS] '${this.config.local_scope}'->remote boolean update ${id} = ${value}`);
 
 		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"boolean","value":${Boolean(value)}}`);
+		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"boolean","value":${JSON.stringify(value)}}`);
 	}
 
 	private sendNumber(id: string, value: number) {
@@ -134,7 +144,7 @@ export class WebSocketWrapper {
 		console.debug(`[SWS] '${this.config.local_scope}'->remote number update ${id} = ${value}`);
 
 		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"number","value":${Number(value)}}`);
+		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"number","value":${JSON.stringify(value)}}`);
 	}
 
 	private sendString(id: string, value: string) {
@@ -146,7 +156,7 @@ export class WebSocketWrapper {
 		console.debug(`[SWS] '${this.config.local_scope}'->remote string update ${id} = ${value}`);
 
 		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"string","value":"${String(value)}"}`);
+		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"string","value":"${JSON.stringify(value)}"}`);
 	}
 
 	private sendObject(id: string, value: object) {
