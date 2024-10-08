@@ -87,36 +87,36 @@ export class WebSocketWrapper {
 			setTimeout(() => this.start(), 10_000);
 		};
 		this.ws.onmessage = event => {
-			let payload: Message = JSON.parse(event.data);
+			let message: Message = JSON.parse(event.data);
 
 			// Abort if scope is not global or does not match local
-			if (payload.scope !== GLOBAL_SCOPE && payload.scope !== this.config.local_scope) {
+			if (message.scope !== GLOBAL_SCOPE && message.scope !== this.config.local_scope) {
 				return;
 			}
 
-			switch (payload.type) {
+			switch (message.type) {
 				case "boolean": {
-					console.debug(`[SWS] local<-'${payload.scope}' boolean update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' boolean update ${message.id} = ${message.value}`);
 					// Set locally
-					this.booleans.get(payload.id).setLocally(Boolean(payload.value));
+					this.booleans.get(message.id).setLocally(Boolean(message.value));
 					break;
 				}
 				case "number": {
-					console.debug(`[SWS] local<-'${payload.scope}' number update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' number update ${message.id} = ${message.value}`);
 					// Set locally
-					this.numbers.get(payload.id).setLocally(Number(payload.value));
+					this.numbers.get(message.id).setLocally(Number(message.value));
 					break;
 				}
 				case "string": {
-					console.debug(`[SWS] local<-'${payload.scope}' string update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' string update ${message.id} = ${message.value}`);
 					// Set locally
-					this.strings.get(payload.id).setLocally(String(payload.value));
+					this.strings.get(message.id).setLocally(String(message.value));
 					break;
 				}
 				case "object": {
-					console.debug(`[SWS] local<-'${payload.scope}' object update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' object update ${message.id} = ${message.value}`);
 					// Set locally
-					this.objects.get(payload.id).setLocally(Object(payload.value));
+					this.objects.get(message.id).setLocally(Object(message.value));
 					break;
 				}
 			}
