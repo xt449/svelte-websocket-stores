@@ -31,10 +31,10 @@ export class WebSocketWrapper {
 	connected: Readable<boolean>;
 
 	// Store dictionaries
-	private booleans: StoreDictionary<boolean>;
-	private numbers: StoreDictionary<number>;
-	private strings: StoreDictionary<string>;
-	private objects: StoreDictionary<object>;
+	private booleansDictionary: StoreDictionary<boolean>;
+	private numbersDictionary: StoreDictionary<number>;
+	private stringsDictionary: StoreDictionary<string>;
+	private objectsDictionary: StoreDictionary<object>;
 
 	// Backing WebSocket connection
 	private ws?: WebSocket;
@@ -55,10 +55,10 @@ export class WebSocketWrapper {
 		this.connected = { subscribe: this.connectionState.subscribe };
 
 		// Store dictionaries
-		this.booleans = new StoreDictionary<boolean>(false, this.sendBoolean);
-		this.numbers = new StoreDictionary<number>(0, this.sendNumber);
-		this.strings = new StoreDictionary<string>("", this.sendString);
-		this.objects = new StoreDictionary<object>({}, this.sendObject);
+		this.booleansDictionary = new StoreDictionary<boolean>(false, this.sendBoolean);
+		this.numbersDictionary = new StoreDictionary<number>(0, this.sendNumber);
+		this.stringsDictionary = new StoreDictionary<string>("", this.sendString);
+		this.objectsDictionary = new StoreDictionary<object>({}, this.sendObject);
 	}
 
 	start() {
@@ -98,29 +98,45 @@ export class WebSocketWrapper {
 				case "boolean": {
 					console.debug(`[SWS] local<-'${message.scope}' boolean update ${message.id} = ${message.value}`);
 					// Set locally
-					this.booleans.get(message.id).setLocally(Boolean(message.value));
+					this.booleansDictionary.get(message.id).setLocally(Boolean(message.value));
 					break;
 				}
 				case "number": {
 					console.debug(`[SWS] local<-'${message.scope}' number update ${message.id} = ${message.value}`);
 					// Set locally
-					this.numbers.get(message.id).setLocally(Number(message.value));
+					this.numbersDictionary.get(message.id).setLocally(Number(message.value));
 					break;
 				}
 				case "string": {
 					console.debug(`[SWS] local<-'${message.scope}' string update ${message.id} = ${message.value}`);
 					// Set locally
-					this.strings.get(message.id).setLocally(String(message.value));
+					this.stringsDictionary.get(message.id).setLocally(String(message.value));
 					break;
 				}
 				case "object": {
 					console.debug(`[SWS] local<-'${message.scope}' object update ${message.id} = ${message.value}`);
 					// Set locally
-					this.objects.get(message.id).setLocally(Object(message.value));
+					this.objectsDictionary.get(message.id).setLocally(Object(message.value));
 					break;
 				}
 			}
 		};
+	}
+
+	get booleans(): StoreDictionary<boolean> {
+		return this.booleansDictionary;
+	}
+
+	get numbers(): StoreDictionary<number> {
+		return this.numbersDictionary;
+	}
+
+	get strings(): StoreDictionary<string> {
+		return this.stringsDictionary;
+	}
+
+	get objects(): StoreDictionary<object> {
+		return this.objectsDictionary;
 	}
 
 	private sendBoolean(id: string, value: boolean) {
