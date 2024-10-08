@@ -45,10 +45,10 @@ export class WebSocketWrapper {
 		this.connected = { subscribe: this.connectionState.subscribe };
 
 		// Store dictionaries
-		this.booleans = new StoreDictionary<boolean>(false, this.sendBooleanValue);
-		this.numbers = new StoreDictionary<number>(0, this.sendNumberValue);
-		this.strings = new StoreDictionary<string>("", this.sendStringValue);
-		this.objects = new StoreDictionary<object>({}, this.sendObjectValue);
+		this.booleans = new StoreDictionary<boolean>(false, this.sendBoolean);
+		this.numbers = new StoreDictionary<number>(0, this.sendNumber);
+		this.strings = new StoreDictionary<string>("", this.sendString);
+		this.objects = new StoreDictionary<object>({}, this.sendObject);
 	}
 
 	start() {
@@ -113,7 +113,7 @@ export class WebSocketWrapper {
 		};
 	}
 
-	private sendBooleanValue(id: string, value: boolean) {
+	private sendBoolean(id: string, value: boolean) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
@@ -125,7 +125,7 @@ export class WebSocketWrapper {
 		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"boolean","value":${Boolean(value)}}`);
 	}
 
-	private sendNumberValue(id: string, value: number) {
+	private sendNumber(id: string, value: number) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
@@ -137,7 +137,7 @@ export class WebSocketWrapper {
 		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"number","value":${Number(value)}}`);
 	}
 
-	private sendStringValue(id: string, value: string) {
+	private sendString(id: string, value: string) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
@@ -149,7 +149,7 @@ export class WebSocketWrapper {
 		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"string","value":"${String(value)}"}`);
 	}
 
-	private sendObjectValue(id: string, value: object) {
+	private sendObject(id: string, value: object) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
