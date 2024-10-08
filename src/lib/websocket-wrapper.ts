@@ -24,6 +24,7 @@ export class WebSocketWrapper {
 	private booleans: StoreDictionary<boolean>;
 	private numbers: StoreDictionary<number>;
 	private strings: StoreDictionary<string>;
+	private objects: StoreDictionary<object>;
 
 	// Backing WebSocket connection
 	private ws?: WebSocket;
@@ -47,6 +48,7 @@ export class WebSocketWrapper {
 		this.booleans = new StoreDictionary<boolean>(false, this.sendBooleanValue);
 		this.numbers = new StoreDictionary<number>(0, this.sendNumberValue);
 		this.strings = new StoreDictionary<string>("", this.sendStringValue);
+		this.objects = new StoreDictionary<object>({}, this.sendObjectValue);
 	}
 
 	start() {
@@ -101,6 +103,12 @@ export class WebSocketWrapper {
 					this.strings.get(payload.id).setLocally(String(payload.value));
 					break;
 				}
+				case "object": {
+					console.debug(`[SWS] local<-'${payload.scope}' object update ${payload.id} = ${payload.value}`);
+					// Set locally
+					this.objects.get(payload.id).setLocally(Object(payload.value));
+					break;
+				}
 			}
 		};
 	}
@@ -139,5 +147,17 @@ export class WebSocketWrapper {
 
 		// Send over WebSocket
 		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"string","value":"${String(value)}"}`);
+	}
+
+	private sendObjectValue(id: string, value: object) {
+		// Abort if WebSocket undefined or not opened
+		if (this.ws?.readyState !== WebSocket.OPEN) {
+			return;
+		}
+
+		console.debug(`[SWS] '${this.config.local_scope}'->remote object update ${id} = ${value}`);
+
+		// Send over WebSocket
+		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"object","value":"${Object(value)}"}`);
 	}
 }
