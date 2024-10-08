@@ -158,6 +158,6 @@ export class WebSocketWrapper {
 		console.debug(`[SWS] '${this.config.local_scope}'->remote object update ${id} = ${value}`);
 
 		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"object","value":"${Object(value)}"}`);
+		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"object","value":"${JSON.stringify(value)}"}`);
 	}
 }
