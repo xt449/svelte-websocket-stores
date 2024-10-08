@@ -4,15 +4,25 @@ import { StoreDictionary } from "./store.js";
 const GLOBAL_SCOPE = "global";
 
 // Configuration
-
 export interface Configuration {
 	server_address: string,
 	server_port: number,
 	local_scope: string,
 }
 
-// Wrapper
+// Type aliases
+type MessageType = "boolean" | "number" | "string" | "object";
+type MessageValue = boolean | number | string | object;
 
+// WebSocket message object structure
+interface Message {
+	scope: string;
+	id: string;
+	type: MessageType;
+	value: MessageValue;
+};
+
+// Wrapper
 export class WebSocketWrapper {
 	private config: Configuration;
 
@@ -31,7 +41,7 @@ export class WebSocketWrapper {
 
 	constructor(config: Configuration) {
 		// Check for valid config
-		if (config.local_scope === undefined || config.server_address === undefined || config.server_port === undefined ) {
+		if (config.local_scope === undefined || config.server_address === undefined || config.server_port === undefined) {
 			console.error("[SWS] Unable to initialize WebSocketWrapper: Invalid configuration!");
 			throw new Error("[SWS] Unable to initialize WebSocketWrapper: Invalid configuration!");
 		}
@@ -45,10 +55,10 @@ export class WebSocketWrapper {
 		this.connected = { subscribe: this.connectionState.subscribe };
 
 		// Store dictionaries
-		this.booleans = new StoreDictionary<boolean>(false, this.sendBooleanValue);
-		this.numbers = new StoreDictionary<number>(0, this.sendNumberValue);
-		this.strings = new StoreDictionary<string>("", this.sendStringValue);
-		this.objects = new StoreDictionary<object>({}, this.sendObjectValue);
+		this.booleans = new StoreDictionary<boolean>(false, this.sendBoolean);
+		this.numbers = new StoreDictionary<number>(0, this.sendNumber);
+		this.strings = new StoreDictionary<string>("", this.sendString);
+		this.objects = new StoreDictionary<object>({}, this.sendObject);
 	}
 
 	start() {
@@ -77,43 +87,43 @@ export class WebSocketWrapper {
 			setTimeout(() => this.start(), 10_000);
 		};
 		this.ws.onmessage = event => {
-			let payload = JSON.parse(event.data);
+			let message: Message = JSON.parse(event.data);
 
 			// Abort if scope is not global or does not match local
-			if (payload.scope !== GLOBAL_SCOPE && payload.scope !== this.config.local_scope) {
+			if (message.scope !== GLOBAL_SCOPE && message.scope !== this.config.local_scope) {
 				return;
 			}
 
-			switch (payload.type) {
+			switch (message.type) {
 				case "boolean": {
-					console.debug(`[SWS] local<-'${payload.scope}' boolean update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' boolean update ${message.id} = ${message.value}`);
 					// Set locally
-					this.booleans.get(payload.id).setLocally(Boolean(payload.value));
+					this.booleans.get(message.id).setLocally(Boolean(message.value));
 					break;
 				}
 				case "number": {
-					console.debug(`[SWS] local<-'${payload.scope}' number update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' number update ${message.id} = ${message.value}`);
 					// Set locally
-					this.numbers.get(payload.id).setLocally(Number(payload.value));
+					this.numbers.get(message.id).setLocally(Number(message.value));
 					break;
 				}
 				case "string": {
-					console.debug(`[SWS] local<-'${payload.scope}' string update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' string update ${message.id} = ${message.value}`);
 					// Set locally
-					this.strings.get(payload.id).setLocally(String(payload.value));
+					this.strings.get(message.id).setLocally(String(message.value));
 					break;
 				}
 				case "object": {
-					console.debug(`[SWS] local<-'${payload.scope}' object update ${payload.id} = ${payload.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' object update ${message.id} = ${message.value}`);
 					// Set locally
-					this.objects.get(payload.id).setLocally(Object(payload.value));
+					this.objects.get(message.id).setLocally(Object(message.value));
 					break;
 				}
 			}
 		};
 	}
 
-	private sendBooleanValue(id: string, value: boolean) {
+	private sendBoolean(id: string, value: boolean) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
@@ -122,10 +132,10 @@ export class WebSocketWrapper {
 		console.debug(`[SWS] '${this.config.local_scope}'->remote boolean update ${id} = ${value}`);
 
 		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"boolean","value":${Boolean(value)}}`);
+		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"boolean","value":${JSON.stringify(value)}}`);
 	}
 
-	private sendNumberValue(id: string, value: number) {
+	private sendNumber(id: string, value: number) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
@@ -134,10 +144,10 @@ export class WebSocketWrapper {
 		console.debug(`[SWS] '${this.config.local_scope}'->remote number update ${id} = ${value}`);
 
 		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"number","value":${Number(value)}}`);
+		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"number","value":${JSON.stringify(value)}}`);
 	}
 
-	private sendStringValue(id: string, value: string) {
+	private sendString(id: string, value: string) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
@@ -146,10 +156,10 @@ export class WebSocketWrapper {
 		console.debug(`[SWS] '${this.config.local_scope}'->remote string update ${id} = ${value}`);
 
 		// Send over WebSocket
-		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"string","value":"${String(value)}"}`);
+		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"string","value":"${JSON.stringify(value)}"}`);
 	}
 
-	private sendObjectValue(id: string, value: object) {
+	private sendObject(id: string, value: object) {
 		// Abort if WebSocket undefined or not opened
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
