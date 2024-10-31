@@ -55,10 +55,10 @@ export class WebSocketWrapper {
 		this.connected = { subscribe: this.connectionState.subscribe };
 
 		// Store dictionaries
-		this.booleansDictionary = new StoreDictionary<boolean>(false, this.sendBoolean);
-		this.numbersDictionary = new StoreDictionary<number>(0, this.sendNumber);
-		this.stringsDictionary = new StoreDictionary<string>("", this.sendString);
-		this.objectsDictionary = new StoreDictionary<object>({}, this.sendObject);
+		this.booleansDictionary = new StoreDictionary<boolean>(false, (id, value) => this.sendBoolean(id, value));
+		this.numbersDictionary = new StoreDictionary<number>(0, (id, value) => this.sendNumber(id, value));
+		this.stringsDictionary = new StoreDictionary<string>("", (id, value) => this.sendString(id, value));
+		this.objectsDictionary = new StoreDictionary<object>({}, (id, value) => this.sendObject(id, value));
 	}
 
 	start() {
