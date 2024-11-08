@@ -24,17 +24,17 @@ interface Message {
 
 // Wrapper
 export class WebSocketWrapper {
-	private config: Configuration;
+	// Config
+	private readonly config: Configuration;
 
-	// Connection state stores
-	private connectionState: Writable<boolean>;
-	connected: Readable<boolean>;
+	// Connection state store
+	private readonly connectionState: Writable<boolean>;
 
 	// Store dictionaries
-	private booleansDictionary: StoreDictionary<boolean>;
-	private numbersDictionary: StoreDictionary<number>;
-	private stringsDictionary: StoreDictionary<string>;
-	private objectsDictionary: StoreDictionary<object>;
+	private readonly booleansDictionary: StoreDictionary<boolean>;
+	private readonly numbersDictionary: StoreDictionary<number>;
+	private readonly stringsDictionary: StoreDictionary<string>;
+	private readonly objectsDictionary: StoreDictionary<object>;
 
 	// Backing WebSocket connection
 	private ws?: WebSocket;
@@ -49,12 +49,10 @@ export class WebSocketWrapper {
 		// Set config value
 		this.config = config;
 
-		// Create connection state stores
+		// Create connection state store
 		this.connectionState = writable(false);
-		// Create our own Readable store
-		this.connected = { subscribe: this.connectionState.subscribe };
 
-		// Store dictionaries
+		// Create store dictionaries
 		this.booleansDictionary = new StoreDictionary<boolean>(false, (id, value) => this.sendBoolean(id, value));
 		this.numbersDictionary = new StoreDictionary<number>(0, (id, value) => this.sendNumber(id, value));
 		this.stringsDictionary = new StoreDictionary<string>("", (id, value) => this.sendString(id, value));
@@ -96,31 +94,40 @@ export class WebSocketWrapper {
 
 			switch (message.type) {
 				case "boolean": {
-					console.debug(`[SWS] local<-'${message.scope}' boolean update ${message.id} = ${message.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' boolean update ${message.id} =`, message.value);
+
 					// Set locally
 					this.booleansDictionary.get(message.id).setLocally(Boolean(message.value));
 					break;
 				}
 				case "number": {
-					console.debug(`[SWS] local<-'${message.scope}' number update ${message.id} = ${message.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' number update ${message.id} =`, message.value);
+
 					// Set locally
 					this.numbersDictionary.get(message.id).setLocally(Number(message.value));
 					break;
 				}
 				case "string": {
-					console.debug(`[SWS] local<-'${message.scope}' string update ${message.id} = ${message.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' string update ${message.id} =`, message.value);
+
 					// Set locally
 					this.stringsDictionary.get(message.id).setLocally(String(message.value));
 					break;
 				}
 				case "object": {
-					console.debug(`[SWS] local<-'${message.scope}' object update ${message.id} = ${message.value}`);
+					console.debug(`[SWS] local<-'${message.scope}' object update ${message.id} =`, message.value);
+
 					// Set locally
 					this.objectsDictionary.get(message.id).setLocally(Object(message.value));
 					break;
 				}
 			}
 		};
+	}
+
+	get connected(): Readable<boolean> {
+		// Create our own Readable store
+		return { subscribe: this.connectionState.subscribe };
 	}
 
 	get booleans(): StoreDictionary<boolean> {
@@ -145,7 +152,7 @@ export class WebSocketWrapper {
 			return;
 		}
 
-		console.debug(`[SWS] '${this.config.local_scope}'->remote boolean update ${id} = ${value}`);
+		console.debug(`[SWS] '${this.config.local_scope}'->remote boolean update ${id} =`, value);
 
 		// Send over WebSocket
 		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"boolean","value":${JSON.stringify(value)}}`);
@@ -157,7 +164,7 @@ export class WebSocketWrapper {
 			return;
 		}
 
-		console.debug(`[SWS] '${this.config.local_scope}'->remote number update ${id} = ${value}`);
+		console.debug(`[SWS] '${this.config.local_scope}'->remote number update ${id} =`, value);
 
 		// Send over WebSocket
 		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"number","value":${JSON.stringify(value)}}`);
@@ -169,7 +176,7 @@ export class WebSocketWrapper {
 			return;
 		}
 
-		console.debug(`[SWS] '${this.config.local_scope}'->remote string update ${id} = ${value}`);
+		console.debug(`[SWS] '${this.config.local_scope}'->remote string update ${id} =`, value);
 
 		// Send over WebSocket
 		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"string","value":"${JSON.stringify(value)}"}`);
@@ -181,7 +188,7 @@ export class WebSocketWrapper {
 			return;
 		}
 
-		console.debug(`[SWS] '${this.config.local_scope}'->remote object update ${id} = ${value}`);
+		console.debug(`[SWS] '${this.config.local_scope}'->remote object update ${id} =`, value);
 
 		// Send over WebSocket
 		this.ws.send(`{"scope":"${this.config.local_scope}","id":"${id}","type":"object","value":"${JSON.stringify(value)}"}`);
