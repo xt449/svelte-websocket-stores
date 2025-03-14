@@ -2,7 +2,7 @@
 	"name": "svelte-websocket-stores",
 	"version": "1.1.6",
 	"license": "MIT",
-	"repository": "https://github.com/xt449/svelte-websocket-stores",
+	"repository": "github:xt449/svelte-websocket-stores",
 	"keywords": [
 		"svelte",
 		"websocket"
@@ -31,9 +31,8 @@
 	},
 	"devDependencies": {
 		"@sveltejs/package": "^2.0.0",
-		"publint": "^0.1.9",
+		"publint": "^0.3.9",
 		"svelte": "^4.0.0",
-		"tslib": "^2.4.1",
 		"typescript": "^5.0.0"
 	}
 }
