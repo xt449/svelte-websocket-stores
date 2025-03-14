@@ -11,21 +11,17 @@
 		"build": "svelte-package && publint"
 	},
 	"type": "module",
+	"files": [
+		"dist"
+	],
 	"exports": {
-		"./websocket": {
-			"types": "./dist/websocket-wrapper.d.ts",
-			"svelte": "./dist/websocket-wrapper.js"
-		},
-		"./store": {
-			"types": "./dist/store.d.ts",
-			"svelte": "./dist/store.js"
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
 		}
 	},
-	"files": [
-		"dist",
-		"!dist/**/*.test.*",
-		"!dist/**/*.spec.*"
-	],
+	"types": "./dist/index.d.ts",
+    "main": "./dist/index.js",
 	"peerDependencies": {
 		"svelte": "^4.0.0"
 	},
