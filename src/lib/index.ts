@@ -93,14 +93,14 @@ export class WebSocketWrapper {
 			if (message.scope !== GLOBAL_SCOPE && message.scope !== this.localScope) {
 				return;
 			}
-			
+
 			console.debug(`[SWS] local<-'${message.scope}' update ${message.id} = ${message.value}`);
 
 			// Set locally
 			this.webSocketStore(message.id).setLocally(message.value);
 		};
 	}
-	
+
 	/**
 	 * Pseudo-constructor for {@link WebSocketStore}
 	 * @param id Store identifier
