@@ -19,7 +19,7 @@ export interface WebSocketStore<T> extends Readable<T> {
 	 * Set value and inform subscribers.
 	 */
 	setLocally(this: void, value: T): void;
-}
+};
 
 /**
  * WebSocket payload Message type
@@ -127,7 +127,7 @@ export class WebSocketWrapper {
 
 			// Send update to websocket
 			this.sendStoreValueUpdate(id, value);
-		}
+		};
 
 		return this.storeDictionary[id] = {
 			// Default subscribe function
@@ -135,7 +135,7 @@ export class WebSocketWrapper {
 			// WebSocketStore implementation of set function
 			set,
 			// Default set function
-			setLocally: store.set
+			setLocally: store.set,
 		};
 	}
 
@@ -156,4 +156,4 @@ export class WebSocketWrapper {
 			value: value,
 		});
 	}
-}
+};
