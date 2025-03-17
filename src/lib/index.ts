@@ -10,7 +10,7 @@ export type Json = boolean | number | string | { [key: string]: Json } | Json[] 
 /**
  * Svelte store that updates accross websocket interface with extra `setLocally` method for client-only reactivity when needed
  */
-export interface WebSocketStore<T> extends Readable<T> {
+export interface WebSocketStore<T> extends Readable<T | undefined> {
 	/**
 	 * Set value, inform subscribers, and send update over WebSocket.
 	 */
@@ -28,6 +28,7 @@ export type Message = {
 	scope: string;
 	id: string;
 	value: Json;
+	type?: string;
 };
 
 /**
@@ -107,12 +108,12 @@ export class WebSocketWrapper {
 	 * @param defaultValue Initial value of store; ignored if store already exists with given id
 	 * @returns New store or existing store if one already exists with given id;
 	 */
-	webSocketStore(id: string, defaultValue?: Json): WebSocketStore<Json> {
+	webSocketStore<T extends Json = Json>(id: string, defaultValue?: T): WebSocketStore<T> {
 		// Check if store already exists with given id
 		let webSocketStore = this.storeDictionary[id];
 		if (webSocketStore !== undefined) {
 			// Return existing store
-			return webSocketStore;
+			return webSocketStore as WebSocketStore<T>;
 		}
 
 		// Else, create new store
@@ -121,7 +122,7 @@ export class WebSocketWrapper {
 		const store = writable(defaultValue);
 
 		// WebSocketStore implementation of set function
-		const set = (value: Json): void => {
+		const set = (value: T): void => {
 			// Set locally first for better reactivity
 			store.set(value);
 
@@ -154,6 +155,7 @@ export class WebSocketWrapper {
 			id: id,
 			scope: this.localScope,
 			value: value,
+			type: typeof value,
 		});
 	}
 }
