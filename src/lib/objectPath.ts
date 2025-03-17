@@ -10,7 +10,7 @@ export type Json = boolean | number | string | { [key: string]: Json } | Json[] 
  * Gets the value of an object's field
  * @returns value at {@link path} of {@link root} or undefined
  */
-export function getAtPath(root: Json | undefined, path: Path): Json | undefined { 
+export function getAtPath(root: Json | undefined, path: Path): Json | undefined {
 	let target = root;
 
 	// interate over path
@@ -36,13 +36,13 @@ export function getAtPath(root: Json | undefined, path: Path): Json | undefined 
  */
 export function setAtPath(root: Json | undefined, path: Path, value: Json | undefined): Json | undefined {
 	// return value if path is empty
-	if(path.length === 0) {
+	if (path.length === 0) {
 		return value;
 	}
 
 	// initialize root if null, undefined, or not an object
-	if(root == null || typeof root != "object") {
-		if(typeof path[0] == "string") {
+	if (root == null || typeof root != "object") {
+		if (typeof path[0] == "string") {
 			root = {};
 		} else {
 			root = [];
@@ -57,7 +57,7 @@ export function setAtPath(root: Json | undefined, path: Path, value: Json | unde
 
 		// initialize next target if value along path is null, undefined, or not an object
 		if (target[pathStep] == null || typeof target[pathStep] != "object") {
-			if(typeof path[i + 1] == "string") {
+			if (typeof path[i + 1] == "string") {
 				target[pathStep] = {};
 			} else {
 				target[pathStep] = [];
@@ -91,7 +91,7 @@ export function derivedFromPath(root: Writable<Json | undefined>, path: Path, de
 	}
 
 	// Initialize default value
-	if(defaultValue !== undefined && getAtPath(get(root), path) === undefined) {
+	if (defaultValue !== undefined && getAtPath(get(root), path) === undefined) {
 		set(defaultValue);
 	}
 
