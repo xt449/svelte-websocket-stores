@@ -19,7 +19,7 @@ export interface WebSocketStore<T> extends Readable<T | undefined> {
 	 * Set value and inform subscribers.
 	 */
 	setLocally(this: void, value: T): void;
-}
+};
 
 /**
  * WebSocket payload Message type
@@ -94,14 +94,14 @@ export class WebSocketWrapper {
 			if (message.scope !== GLOBAL_SCOPE && message.scope !== this.localScope) {
 				return;
 			}
-			
+
 			console.debug(`[SWS] local<-'${message.scope}' update ${message.id} = ${message.value}`);
 
 			// Set locally
 			this.webSocketStore(message.id).setLocally(message.value);
 		};
 	}
-	
+
 	/**
 	 * Pseudo-constructor for {@link WebSocketStore}
 	 * @param id Store identifier
@@ -128,7 +128,7 @@ export class WebSocketWrapper {
 
 			// Send update to websocket
 			this.sendStoreValueUpdate(id, value);
-		}
+		};
 
 		return this.storeDictionary[id] = {
 			// Default subscribe function
@@ -136,7 +136,7 @@ export class WebSocketWrapper {
 			// WebSocketStore implementation of set function
 			set,
 			// Default set function
-			setLocally: store.set
+			setLocally: store.set,
 		};
 	}
 
@@ -158,4 +158,4 @@ export class WebSocketWrapper {
 			type: typeof value,
 		});
 	}
-}
+};
