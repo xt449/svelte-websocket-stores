@@ -37,10 +37,8 @@ export class WebSocketWrapper {
 	// Backing WebSocket connection
 	private ws?: WebSocket;
 
-	constructor(readonly serverHost: string, readonly serverPort: number, readonly localScope: string, readonly reconnectDelayMs: number = 10_000) {
-		console.assert(this.serverHost != null, "Unable to initialize WebSocketWrapper: 'serverHost' must not be falsey!");
-		console.assert(this.serverPort != null, "Unable to initialize WebSocketWrapper: 'serverPort' must not be falsey!");
-		console.assert(this.localScope != null, "Unable to initialize WebSocketWrapper: 'localScope' must not be falsey!");
+	constructor(readonly serverUrl: string, readonly reconnectDelayMs: number = 10_000) {
+		console.assert(this.serverUrl != null, "Unable to initialize WebSocketWrapper: 'serverUrl' must not be falsey!");
 
 		// Create connection store and readonly store
 		this.connectionStore = writable(false);
@@ -59,7 +57,7 @@ export class WebSocketWrapper {
 
 		// Start websocket
 		console.info("[SWS] WebSocket starting...");
-		this.ws = new WebSocket(`ws://${this.serverHost}:${this.serverPort}`);
+		this.ws = new WebSocket(this.serverUrl);
 
 		// Initialize event listenters
 		this.ws.onopen = event => {
