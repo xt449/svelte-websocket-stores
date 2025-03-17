@@ -1,11 +1,7 @@
 import { readonly, writable, type Readable, type Writable } from "svelte/store";
+import { derivedFromPath, type Json, type Path } from "./objectPath.js";
 
 const GLOBAL_SCOPE = "global";
-
-/**
- * Json type
- */
-export type Json = boolean | number | string | { [key: string]: Json } | Json[] | null;
 
 /**
  * Svelte store that updates accross websocket interface with extra `setLocally` method for client-only reactivity when needed
@@ -25,21 +21,20 @@ export interface WebSocketStore<T> extends Readable<T> {
  * WebSocket payload Message type
  */
 export type Message = {
-	scope: string;
-	id: string;
-	value: Json;
+	path: Path;
+	value: Json | undefined;
 };
 
 /**
  * WebSocket wrapper class and entry point
  */
 export class WebSocketWrapper {
-	// Connection state store
-	private readonly connectionState: Writable<boolean>;
-	readonly readonlyConnectionState: Readable<boolean>;
+	// Connection store and readonly store
+	private readonly connectionStore: Writable<boolean>;
+	readonly connectionState: Readable<boolean>;
 
-	// The WebSocketStore dictionary for this instance
-	private readonly storeDictionary: Record<string, WebSocketStore<Json>>;
+	// Backing object store
+	private readonly objectStore: Writable<Json | undefined>;
 
 	// Backing WebSocket connection
 	private ws?: WebSocket;
@@ -49,11 +44,12 @@ export class WebSocketWrapper {
 		console.assert(this.serverPort != null, "Unable to initialize WebSocketWrapper: 'serverPort' must not be falsey!");
 		console.assert(this.localScope != null, "Unable to initialize WebSocketWrapper: 'localScope' must not be falsey!");
 
-		// Create connection state store
-		this.connectionState = writable(false);
-		this.readonlyConnectionState = readonly(this.connectionState);
+		// Create connection store and readonly store
+		this.connectionStore = writable(false);
+		this.connectionState = readonly(this.connectionStore);
 
-		this.storeDictionary = {};
+		// Create object store
+		this.objectStore = writable(undefined);
 	}
 
 	start() {
@@ -72,7 +68,7 @@ export class WebSocketWrapper {
 			console.info("[SWS] WebSocket opened");
 
 			// Set connection state to true
-			this.connectionState.set(true);
+			this.connectionStore.set(true);
 		}
 		this.ws.onerror = event => {
 			console.warn("[SWS] WebSocket errored:", event);
@@ -81,7 +77,7 @@ export class WebSocketWrapper {
 			console.info(`[SWS] WebSocket closed: Reconnecting in ${this.reconnectDelayMs / 1000} ms...`);
 
 			// Set connection state to false
-			this.connectionState.set(false);
+			this.connectionStore.set(false);
 
 			// Execute after delay
 			setTimeout(() => this.start(), this.reconnectDelayMs);
@@ -90,46 +86,37 @@ export class WebSocketWrapper {
 			let message: Message = JSON.parse(event.data);
 
 			// Abort if scope is not global or does not match local
-			if (message.scope !== GLOBAL_SCOPE && message.scope !== this.localScope) {
+			if (message.path.indexOf(GLOBAL_SCOPE) !== 0 && message.path.indexOf(this.localScope) !== 0) {
 				return;
 			}
 
-			console.debug(`[SWS] local<-'${message.scope}' update ${message.id} = ${message.value}`);
+			console.debug(`[SWS] Received update '${message.path}' = ${message.value}`);
 
 			// Set locally
-			this.webSocketStore(message.id).setLocally(message.value);
+			this.webSocketStore(message.path).setLocally(message.value);
 		};
 	}
 
 	/**
 	 * Pseudo-constructor for {@link WebSocketStore}
-	 * @param id Store identifier
+	 * @param path Absolute path to value
 	 * @param defaultValue Initial value of store; ignored if store already exists with given id
 	 * @returns New store or existing store if one already exists with given id;
 	 */
-	webSocketStore(id: string, defaultValue?: Json): WebSocketStore<Json> {
-		// Check if store already exists with given id
-		let webSocketStore = this.storeDictionary[id];
-		if (webSocketStore !== undefined) {
-			// Return existing store
-			return webSocketStore;
-		}
-
-		// Else, create new store
-
+	webSocketStore(path: Path, defaultValue?: Json): WebSocketStore<Json | undefined> {
 		// Backing store
-		const store = writable(defaultValue);
+		const store = derivedFromPath(this.objectStore, path);
 
 		// WebSocketStore implementation of set function
-		const set = (value: Json): void => {
+		const set = (value: Json | undefined): void => {
 			// Set locally first for better reactivity
 			store.set(value);
 
 			// Send update to websocket
-			this.sendStoreValueUpdate(id, value);
+			this.sendStoreValueUpdate(path, value);
 		};
 
-		return this.storeDictionary[id] = {
+		return {
 			// Default subscribe function
 			subscribe: store.subscribe,
 			// WebSocketStore implementation of set function
@@ -149,10 +136,9 @@ export class WebSocketWrapper {
 		this.ws.send(JSON.stringify(message));
 	}
 
-	private sendStoreValueUpdate(id: string, value: Json) {
+	private sendStoreValueUpdate(path: Path, value: Json | undefined) {
 		this.sendMessage({
-			id: id,
-			scope: this.localScope,
+			path: path,
 			value: value,
 		});
 	}
