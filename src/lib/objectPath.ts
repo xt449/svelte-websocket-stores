@@ -15,8 +15,8 @@ export function getAtPath(root: Json | undefined, path: Path): Json | undefined 
 
 	// interate over path
 	for (const pathStep of path) {
-		// return undefined if any value along path is null, undefined, or not an object
-		if (target == null || typeof target != "object") {
+		// return undefined if any value along path is not an object (arrays are objects)
+		if (typeof target != "object") {
 			return undefined;
 		}
 
@@ -32,7 +32,7 @@ export function getAtPath(root: Json | undefined, path: Path): Json | undefined 
  * Sets value at {@link path} of {@link root} to {@link value}
  * 
  * Sets the value of an object's field
- * @returns modified root
+ * @returns modified root (this is important if {@link root} is not an object)
  */
 export function setAtPath(root: Json | undefined, path: Path, value: Json | undefined): Json | undefined {
 	// return value if path is empty
@@ -40,8 +40,8 @@ export function setAtPath(root: Json | undefined, path: Path, value: Json | unde
 		return value;
 	}
 
-	// initialize root if null, undefined, or not an object
-	if (root == null || typeof root != "object") {
+	// initialize root if not an object (arrays are objects)
+	if (typeof root != "object") {
 		if (typeof path[0] == "string") {
 			root = {};
 		} else {
@@ -55,8 +55,8 @@ export function setAtPath(root: Json | undefined, path: Path, value: Json | unde
 	for (let i = 0; i < path.length - 1; i++) {
 		const pathStep = path[i];
 
-		// initialize next target if value along path is null, undefined, or not an object
-		if (target[pathStep] == null || typeof target[pathStep] != "object") {
+		// initialize next target if value along path is not an object (arrays are objects)
+		if (typeof target[pathStep] != "object") {
 			if (typeof path[i + 1] == "string") {
 				target[pathStep] = {};
 			} else {
