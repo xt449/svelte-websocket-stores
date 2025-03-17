@@ -1,8 +1,6 @@
 import { readonly, writable, type Readable, type Writable } from "svelte/store";
 import { derivedFromPath, type Json, type Path } from "./objectPath.js";
 
-const GLOBAL_SCOPE = "global";
-
 /**
  * Svelte store that updates accross websocket interface with extra `setLocally` method for client-only reactivity when needed
  */
@@ -23,13 +21,6 @@ export interface WebSocketStore<T> extends Readable<T> {
 export type Message = {
 	path: Path;
 	value: Json | undefined;
-};
-
-/**
- * Convert "path.format.like.this.1" to ["path", "format", "like", "this", 1]
- */
-export function path(dotPath: string): Path {
-	return dotPath.split(".").map(step => isNaN(step as any) ? step : Number(step));
 };
 
 /**
