@@ -75,7 +75,7 @@ export function setAtPath(root: Json | undefined, path: Path, value: Json | unde
 	return root;
 };
 
-export function derivedFromPath(root: Writable<Json | undefined>, path: Path): Writable<Json | undefined> {
+export function derivedFromPath(root: Writable<Json | undefined>, path: Path, defaultValue?: Json): Writable<Json | undefined> {
 	const readable = derived(root, rootValue => {
 		return getAtPath(rootValue, path);
 	});
@@ -88,6 +88,11 @@ export function derivedFromPath(root: Writable<Json | undefined>, path: Path): W
 
 	function update(updater: Updater<Json | undefined>) {
 		set(updater(getAtPath(get(root), path)));
+	}
+
+	// Initialize default value
+	if(defaultValue !== undefined && getAtPath(get(root), path) === undefined) {
+		set(defaultValue);
 	}
 
 	return { ...readable, set, update };

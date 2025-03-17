@@ -26,6 +26,13 @@ export type Message = {
 };
 
 /**
+ * Convert "path.format.like.this.1" to ["path", "format", "like", "this", 1]
+ */
+export function path(dotPath: string): Path {
+	return dotPath.split(".").map(step => isNaN(step as any) ? step : Number(step));
+};
+
+/**
  * WebSocket wrapper class and entry point
  */
 export class WebSocketWrapper {
@@ -74,7 +81,7 @@ export class WebSocketWrapper {
 			console.warn("[SWS] WebSocket errored:", event);
 		};
 		this.ws.onclose = event => {
-			console.info(`[SWS] WebSocket closed: Reconnecting in ${this.reconnectDelayMs / 1000} ms...`);
+			console.info(`[SWS] WebSocket closed: Reconnecting in ${this.reconnectDelayMs / 1000} seconds...`);
 
 			// Set connection state to false
 			this.connectionStore.set(false);
@@ -85,8 +92,8 @@ export class WebSocketWrapper {
 		this.ws.onmessage = event => {
 			let message: Message = JSON.parse(event.data);
 
-			// Abort if scope is not global or does not match local
-			if (message.path.indexOf(GLOBAL_SCOPE) !== 0 && message.path.indexOf(this.localScope) !== 0) {
+			// Abort if path is null or undefined
+			if (message.path == null) {
 				return;
 			}
 
@@ -103,12 +110,12 @@ export class WebSocketWrapper {
 	 * @param defaultValue Initial value of store; ignored if store already exists with given id
 	 * @returns New store or existing store if one already exists with given id;
 	 */
-	webSocketStore(path: Path, defaultValue?: Json): WebSocketStore<Json | undefined> {
+	webSocketStore<T extends Json = Json>(path: Path, defaultValue?: T): WebSocketStore<T | undefined> {
 		// Backing store
-		const store = derivedFromPath(this.objectStore, path);
+		const store = derivedFromPath(this.objectStore, path, defaultValue) as Writable<T | undefined>;
 
 		// WebSocketStore implementation of set function
-		const set = (value: Json | undefined): void => {
+		const set = (value: T): void => {
 			// Set locally first for better reactivity
 			store.set(value);
 
