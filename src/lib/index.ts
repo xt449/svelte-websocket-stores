@@ -64,7 +64,11 @@ export class WebSocketWrapper {
 		this.messageLogging = false;
 	}
 
-	start() {
+	/**
+	 * Initialize connection to WebSocket server.
+	 * On connection loss, a new connection will be started after {@link reconnectDelayMs}.
+	 */
+	start(): void {
 		// Abort if WebSocket already opened
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			console.info("[SWS] WebSocket already open");
@@ -149,7 +153,7 @@ export class WebSocketWrapper {
 		};
 	}
 
-	private sendMessage(message: Message) {
+	private sendMessage(message: Message): void {
 		// Abort if WebSocket undefined or not OPEN
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
@@ -159,7 +163,7 @@ export class WebSocketWrapper {
 		this.ws.send(JSON.stringify(message));
 	}
 
-	private sendStoreValueUpdate(id: string, value: Json) {
+	private sendStoreValueUpdate(id: string, value: Json): void {
 		this.sendMessage({
 			id: id,
 			scope: this.localScope,
