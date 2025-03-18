@@ -1,28 +1,10 @@
-import { readonly, writable, type Readable, type Writable } from "svelte/store";
-import { derivedFromPath, setAtPath, type Json, type Path } from "./objectPath.js";
-
-/**
- * Svelte store that updates accross websocket interface with extra `setLocally` method for client-only reactivity when needed
- */
-export interface WebSocketStore<T> extends Readable<T> {
-	/**
-	 * Set value, inform subscribers, and send update over WebSocket.
-	 */
-	set(this: void, value: T): void;
-};
-
-/**
- * WebSocket payload Message type
- */
-export type Message = {
-	path: Path;
-	value: Json | undefined;
-};
+import { derived, get, readonly, writable, type Readable, type Updater, type Writable } from "svelte/store";
+import { getAtPath, setAtPath, type Json, type Message, type Path, type WebSocketStores, type WritableStore } from "./webSocketStores.js";
 
 /**
  * WebSocket wrapper class and entry point
  */
-export class WebSocketWrapper {
+export class WebSocketWrapper implements WebSocketStores {
 	// Connection store and readonly store
 	private readonly connectionStore: Writable<boolean>;
 	readonly connectionState: Readable<boolean>;
@@ -32,7 +14,7 @@ export class WebSocketWrapper {
 
 	// Cached stores
 	// (key is `path.join(".")`)
-	private readonly webSocketStoreCache: Record<string, WebSocketStore<unknown>>;
+	private readonly webSocketStoreCache: Record<string, WritableStore<any>>;
 
 	// Backing WebSocket connection
 	private ws?: WebSocket;
@@ -102,7 +84,7 @@ export class WebSocketWrapper {
 	 * @param defaultValue Initial value of store; ignored if store already exists at given path
 	 * @returns New store or existing store if one already exists at given path;
 	 */
-	webSocketStore<T extends Json = Json>(path: Path, defaultValue?: T): WebSocketStore<T | undefined> {
+	webSocketStore<T extends Json = Json>(path: Path, defaultValue?: T): WritableStore<T | undefined> {
 		// Path to string
 		const pathString = path.join(".");
 
@@ -110,7 +92,7 @@ export class WebSocketWrapper {
 		let webSocketStore = this.webSocketStoreCache[pathString];
 		if (webSocketStore !== undefined) {
 			// Return existing store
-			return webSocketStore as WebSocketStore<T | undefined>;
+			return webSocketStore as WritableStore<T | undefined>;
 		}
 
 		// Else, create new store
@@ -119,7 +101,7 @@ export class WebSocketWrapper {
 		const store = derivedFromPath(this.objectStore, path, defaultValue) as Writable<T | undefined>;
 
 		// WebSocketStore implementation of set function
-		const set = (value: T): void => {
+		const set = (value: T | undefined): void => {
 			// Set locally first for better reactivity
 			store.set(value);
 
@@ -152,4 +134,27 @@ export class WebSocketWrapper {
 			value: value,
 		});
 	}
+};
+
+export function derivedFromPath(root: Writable<Json | undefined>, path: Path, defaultValue?: Json): Writable<Json | undefined> {
+	const readable = derived(root, rootValue => {
+		return getAtPath(rootValue, path);
+	});
+
+	function set(newValue: Json | undefined) {
+		root.update(rootValue => {
+			return setAtPath(rootValue, path, newValue);
+		});
+	}
+
+	function update(updater: Updater<Json | undefined>) {
+		set(updater(getAtPath(get(root), path)));
+	}
+
+	// Initialize default value
+	if (defaultValue !== undefined && getAtPath(get(root), path) === undefined) {
+		set(defaultValue);
+	}
+
+	return { ...readable, set, update };
 };

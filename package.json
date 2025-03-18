@@ -18,6 +18,10 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
+		},
+		"./webSocketStores": {
+			"types": "./dist/webSocketStores.d.ts",
+			"default": "./dist/webSocketStores.js"
 		}
 	},
 	"types": "./dist/index.d.ts",
