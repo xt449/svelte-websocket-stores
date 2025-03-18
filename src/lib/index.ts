@@ -45,6 +45,11 @@ export class WebSocketWrapper {
 	// Backing WebSocket connection
 	private ws?: WebSocket;
 
+	/**
+	 * Whether to log messages to console
+	 */
+	messageLogging: boolean;
+
 	constructor(readonly serverHost: string, readonly serverPort: number, readonly localScope: string, readonly reconnectDelayMs: number = 10_000) {
 		console.assert(this.serverHost != null, "Unable to initialize WebSocketWrapper: 'serverHost' must not be falsey!");
 		console.assert(this.serverPort != null, "Unable to initialize WebSocketWrapper: 'serverPort' must not be falsey!");
@@ -55,6 +60,8 @@ export class WebSocketWrapper {
 		this.readonlyConnectionState = readonly(this.connectionState);
 
 		this.storeDictionary = {};
+
+		this.messageLogging = false;
 	}
 
 	start() {
@@ -95,7 +102,9 @@ export class WebSocketWrapper {
 				return;
 			}
 
-			console.debug(`[SWS] local<-'${message.scope}' update ${message.id} = ${message.value}`);
+			if(this.messageLogging) {
+				console.debug(`[SWS] local<-'${message.scope}' update ${message.id} = ${message.value}`);
+			}
 
 			// Set locally
 			this.webSocketStore(message.id).setLocally(message.value);
