@@ -28,7 +28,6 @@ export type Message = {
 	scope: string;
 	id: string;
 	value: Json;
-	type?: string;
 };
 
 /**
@@ -168,7 +167,6 @@ export class WebSocketWrapper {
 			id: id,
 			scope: this.localScope,
 			value: value,
-			type: typeof value,
 		});
 	}
 };
