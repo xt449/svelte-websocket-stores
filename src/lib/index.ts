@@ -35,8 +35,8 @@ export type Message = {
  */
 export class WebSocketWrapper {
 	// Connection state store
-	private readonly connectionState: Writable<boolean>;
-	readonly readonlyConnectionState: Readable<boolean>;
+	private readonly connectionStore: Writable<boolean>;
+	readonly connectionState: Readable<boolean>;
 
 	// The WebSocketStore dictionary for this instance
 	private readonly storeDictionary: Record<string, WebSocketStore<Json>>;
@@ -54,8 +54,8 @@ export class WebSocketWrapper {
 		console.assert(this.localScope != null, "Unable to initialize WebSocketWrapper: 'localScope' must not be falsey!");
 
 		// Create connection state store
-		this.connectionState = writable(false);
-		this.readonlyConnectionState = readonly(this.connectionState);
+		this.connectionStore = writable(false);
+		this.connectionState = readonly(this.connectionStore);
 
 		this.storeDictionary = {};
 
@@ -88,7 +88,7 @@ export class WebSocketWrapper {
 			console.info("[SWS] WebSocket opened");
 
 			// Set connection state to true
-			this.connectionState.set(true);
+			this.connectionStore.set(true);
 		}
 		this.ws.onerror = event => {
 			console.warn("[SWS] WebSocket errored:", event);
@@ -97,7 +97,7 @@ export class WebSocketWrapper {
 			console.info(`[SWS] WebSocket closed: Reconnecting in ${this.reconnectDelayMs / 1000} seconds...`);
 
 			// Set connection state to false
-			this.connectionState.set(false);
+			this.connectionStore.set(false);
 
 			// Execute after delay
 			setTimeout(() => this.start(), this.reconnectDelayMs);
