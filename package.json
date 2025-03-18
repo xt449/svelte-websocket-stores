@@ -1,6 +1,6 @@
 {
 	"name": "svelte-websocket-stores",
-	"version": "1.1.6",
+	"version": "1.2.0",
 	"license": "MIT",
 	"repository": "github:xt449/svelte-websocket-stores",
 	"keywords": [
@@ -23,12 +23,12 @@
 	"types": "./dist/index.d.ts",
 	"main": "./dist/index.js",
 	"peerDependencies": {
-		"svelte": "^4.0.0"
+		"svelte": "^3.0.0 || ^4.0.0 || ^5.0.0"
 	},
 	"devDependencies": {
 		"@sveltejs/package": "^2.0.0",
 		"publint": "^0.3.9",
-		"svelte": "^4.0.0",
+		"svelte": "^3.0.0 || ^4.0.0 || ^5.0.0",
 		"typescript": "^5.0.0"
 	}
 }
