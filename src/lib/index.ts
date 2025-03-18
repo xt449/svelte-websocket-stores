@@ -73,6 +73,12 @@ export class WebSocketWrapper {
 			return;
 		}
 
+		// Abort if WebSocket already connecting
+		if (this.ws?.readyState === WebSocket.CONNECTING) {
+			console.info("[SWS] WebSocket already connecting");
+			return;
+		}
+
 		// Start websocket
 		console.info(`[SWS] WebSocket starting... Connecting to ${this.serverUrl}`);
 		this.ws = new WebSocket(this.serverUrl);
