@@ -4,7 +4,7 @@ import { getAtPath, setAtPath, type Json, type Message, type Path, type WebSocke
 /**
  * WebSocket wrapper class and entry point
  */
-export class WebSocketWrapper implements WebSocketStores {
+export class SvelteWebSocketStores implements WebSocketStores {
 	// Connection store and readonly store
 	private readonly connectionStore: Writable<boolean>;
 	readonly connectionState: Readable<boolean>;
@@ -40,6 +40,12 @@ export class WebSocketWrapper implements WebSocketStores {
 			return;
 		}
 
+		// Abort if WebSocket already connecting
+		if (this.ws?.readyState === WebSocket.CONNECTING) {
+			console.info("[SWS] WebSocket already connecting");
+			return;
+		}
+
 		// Start websocket
 		console.info("[SWS] WebSocket starting...");
 		this.ws = new WebSocket(this.serverUrl);
@@ -64,7 +70,7 @@ export class WebSocketWrapper implements WebSocketStores {
 			setTimeout(() => this.start(), this.reconnectDelayMs);
 		};
 		this.ws.onmessage = event => {
-			let message: Message = JSON.parse(event.data);
+			const message: Message = JSON.parse(event.data);
 
 			// Abort if path is null or undefined
 			if (message.path == null) {
@@ -89,7 +95,7 @@ export class WebSocketWrapper implements WebSocketStores {
 		const pathString = path.join(".");
 
 		// Check cache
-		let webSocketStore = this.webSocketStoreCache[pathString];
+		const webSocketStore = this.webSocketStoreCache[pathString];
 		if (webSocketStore !== undefined) {
 			// Return existing store
 			return webSocketStore as WritableStore<T | undefined>;
