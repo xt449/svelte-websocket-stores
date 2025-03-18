@@ -79,7 +79,7 @@ export class WebSocketWrapper {
 			console.warn("[SWS] WebSocket errored:", event);
 		};
 		this.ws.onclose = event => {
-			console.info(`[SWS] WebSocket closed: Reconnecting in ${this.reconnectDelayMs / 1000} ms...`);
+			console.info(`[SWS] WebSocket closed: Reconnecting in ${this.reconnectDelayMs / 1000} seconds...`);
 
 			// Set connection state to false
 			this.connectionState.set(false);
