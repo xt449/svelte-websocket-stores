@@ -10,7 +10,7 @@ export type Json = boolean | number | string | { [key: string]: Json } | Json[] 
 /**
  * Svelte store that updates accross websocket interface with extra `setLocally` method for client-only reactivity when needed
  */
-export interface WebSocketStore<T> extends Readable<T | undefined> {
+export interface WebSocketStore<T> extends Readable<T> {
 	/**
 	 * Set value, inform subscribers, and send update over WebSocket.
 	 */
@@ -110,12 +110,13 @@ export class WebSocketWrapper {
 				return;
 			}
 
-			if(this.messageLogging) {
-				console.debug(`[SWS] local<-'${message.scope}' update ${message.id} = ${message.value}`);
+			// Log message if enabled
+			if (this.messageLogging) {
+				console.debug(`[SWS] local<-'${message.scope}' update '${message.id}' = ${message.value}`);
 			}
 
 			// Set locally
-			this.webSocketStore(message.id).setLocally(message.value);
+			this.webSocketStore(message.id, message.value).setLocally(message.value);
 		};
 	}
 
@@ -125,7 +126,7 @@ export class WebSocketWrapper {
 	 * @param defaultValue Initial value of store; ignored if store already exists with given id
 	 * @returns New store or existing store if one already exists with given id;
 	 */
-	webSocketStore<T extends Json = Json>(id: string, defaultValue?: T): WebSocketStore<T> {
+	webSocketStore<T extends Json = Json>(id: string, defaultValue: T): WebSocketStore<T> {
 		// Check if store already exists with given id
 		let webSocketStore = this.storeDictionary[id];
 		if (webSocketStore !== undefined) {
@@ -135,16 +136,32 @@ export class WebSocketWrapper {
 
 		// Else, create new store
 
+		// Do not allow undefined values
+		if (defaultValue === undefined) {
+			console.trace(`[SWS] Tried to initialize '${id}' to undefined. Use null instead.`);
+			throw new Error(`Tried to initialize '${id}' to undefined.`);
+		}
+
 		// Backing store
 		const store = writable(defaultValue);
 
 		// WebSocketStore implementation of set function
 		const set = (value: T): void => {
+			// Do not allow undefined values
+			if (value === undefined) {
+				console.trace(`[SWS] Tried to set '${id}' to undefined. Use null instead.`);
+				return;
+			}
+
 			// Set locally first for better reactivity
 			store.set(value);
 
 			// Send update to websocket
-			this.sendStoreValueUpdate(id, value);
+			this.sendMessage({
+				id: id,
+				scope: this.localScope,
+				value: value,
+			});
 		};
 
 		return this.storeDictionary[id] = {
@@ -165,13 +182,10 @@ export class WebSocketWrapper {
 
 		// Send over WebSocket
 		this.ws.send(JSON.stringify(message));
-	}
 
-	private sendStoreValueUpdate(id: string, value: Json): void {
-		this.sendMessage({
-			id: id,
-			scope: this.localScope,
-			value: value,
-		});
+		// Log message if enabled
+		if (this.messageLogging) {
+			console.debug(`[SWS] local->'${message.scope}' update '${message.id}' = ${message.value}`);
+		}
 	}
 };
