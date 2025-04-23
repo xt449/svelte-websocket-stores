@@ -44,6 +44,8 @@ export class WebSocketWrapper {
 	// Backing WebSocket connection
 	private ws?: WebSocket;
 
+	private connectionLockResolver?: Function;
+
 	/**
 	 * Whether to log messages to console
 	 */
@@ -60,6 +62,32 @@ export class WebSocketWrapper {
 		this.storeDictionary = {};
 
 		this.messageLogging = false;
+
+		// Subscribe to connectionStore for managing Web Lock
+		this.connectionStore.subscribe((connected) => {
+			if (connected) {
+				// Release current lock to avoid duplicates
+				if (this.connectionLockResolver) {
+					this.connectionLockResolver();
+				}
+				if (navigator && navigator.locks && navigator.locks.request) {
+					// Create and override lock resolver
+					const lockPromise = new Promise((resolve) => {
+						this.connectionLockResolver = resolve;
+					});
+					// Request lock
+					navigator.locks.request("swsConnectionLock", () => lockPromise);
+				} else {
+					// Overwrite lock resolver
+					this.connectionLockResolver = undefined;
+				}
+			} else {
+				// Release current lock on connection loss
+				if (this.connectionLockResolver) {
+					this.connectionLockResolver();
+				}
+			}
+		});
 	}
 
 	/**
