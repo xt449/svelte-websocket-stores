@@ -1,6 +1,6 @@
 {
 	"name": "svelte-websocket-stores",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"license": "MIT",
 	"repository": "github:xt449/svelte-websocket-stores",
 	"keywords": [
