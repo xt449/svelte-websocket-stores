@@ -44,6 +44,8 @@ export class WebSocketWrapper {
 	// Backing WebSocket connection
 	private ws?: WebSocket;
 
+	private hearbeatIntervalId: number;
+
 	private connectionLockResolver?: Function;
 
 	/**
@@ -62,6 +64,8 @@ export class WebSocketWrapper {
 		this.storeDictionary = {};
 
 		this.messageLogging = false;
+
+		this.hearbeatIntervalId = 0;
 
 		// Subscribe to connectionStore for managing Web Lock
 		this.connectionStore.subscribe((connected) => {
@@ -115,6 +119,9 @@ export class WebSocketWrapper {
 		this.ws.onopen = event => {
 			console.info("[SWS] WebSocket opened");
 
+			// Start manual heartbeat
+			setInterval(this.sendHearbeat, 10_000);
+
 			// Set connection state to true
 			this.connectionStore.set(true);
 		}
@@ -123,6 +130,9 @@ export class WebSocketWrapper {
 		};
 		this.ws.onclose = event => {
 			console.info(`[SWS] WebSocket closed: Reconnecting in ${this.reconnectDelayMs / 1000} seconds...`);
+
+			// Stop manual heartbeat
+			clearInterval(this.hearbeatIntervalId);
 
 			// Set connection state to false
 			this.connectionStore.set(false);
@@ -215,5 +225,18 @@ export class WebSocketWrapper {
 		if (this.messageLogging) {
 			console.debug(`[SWS] local->'${message.scope}' update '${message.id}' = ${message.value}`);
 		}
+	}
+
+	private sendHearbeat(): void {
+		// Abort if WebSocket undefined or not OPEN
+		if (this.ws?.readyState !== WebSocket.OPEN) {
+			// Clear interval
+			clearInterval(this.hearbeatIntervalId);
+
+			return;
+		}
+
+		// Send empty object
+		this.ws?.send("{}");
 	}
 };
